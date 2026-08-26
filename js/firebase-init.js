@@ -6,12 +6,13 @@ import { getStorage } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-s
 // TODO: REPLACE THIS ENTIRE CONFIG OBJECT WITH YOUR FIREBASE WEB APP CONFIG
 // You can find this in Firebase Console -> Project Settings -> General -> Your apps -> Web app
 const firebaseConfig = {
-  apiKey: "REPLACE_WITH_YOUR_API_KEY",
+  apiKey: "AIzaSyDLuB5i6QsKzh3E9Ri1sGXm9AKYNEhIafc",
   authDomain: "imaba-malang-db.firebaseapp.com",
   projectId: "imaba-malang-db",
-  storageBucket: "imaba-malang-db.appspot.com",
-  messagingSenderId: "REPLACE_WITH_YOUR_MESSAGING_SENDER_ID",
-  appId: "REPLACE_WITH_YOUR_APP_ID"
+  storageBucket: "imaba-malang-db.firebasestorage.app",
+  messagingSenderId: "591652789353",
+  appId: "1:591652789353:web:afd5ca38e30d0471c5d6f8",
+  measurementId: "G-KTFCNF5ZF6"
 };
 
 // Initialize Firebase
