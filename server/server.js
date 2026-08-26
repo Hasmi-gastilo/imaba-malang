@@ -77,6 +77,26 @@ app.get('/api/health', (req, res) => {
   });
 });
 
+app.get('/api/debug-env', (req, res) => {
+  const fbEnv = process.env.FIREBASE_SERVICE_ACCOUNT;
+  let parseSuccess = false;
+  let errorMsg = null;
+  if (fbEnv) {
+    try {
+      JSON.parse(fbEnv);
+      parseSuccess = true;
+    } catch (e) {
+      errorMsg = e.message;
+    }
+  }
+  res.json({
+    hasFbEnv: !!fbEnv,
+    parseSuccess,
+    errorMsg,
+    length: fbEnv ? fbEnv.length : 0
+  });
+});
+
 // Serve HTML files - catch-all for SPA
 app.get('*', (req, res) => {
   const filePath = path.join(__dirname, '../public', req.path);

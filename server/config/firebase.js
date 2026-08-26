@@ -29,12 +29,13 @@ try {
   console.error("❌ Gagal menginisialisasi Firebase Admin SDK:", error.message);
 }
 
-const db = () => getFirestore();
-const auth = () => getAuth();
-const bucket = () => getStorage().bucket();
+let db, auth, bucket;
+try {
+  db = getFirestore();
+  auth = getAuth();
+  bucket = getStorage().bucket();
+} catch (e) {
+  console.error("Firebase services not initialized:", e.message);
+}
 
-module.exports = { 
-  get db() { return db(); }, 
-  get auth() { return auth(); }, 
-  get bucket() { return bucket(); } 
-};
+module.exports = { db, auth, bucket };
