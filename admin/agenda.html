@@ -185,6 +185,15 @@
 <script type="module" src="../js/api.js"></script>
 <script src="../js/admin-shared.js"></script>
 <script>
+function checkAuth() {
+    if (typeof window.requireAdmin === "function") {
+        window.requireAdmin();
+    } else {
+        setTimeout(checkAuth, 50);
+    }
+}
+checkAuth();
+
   let allData = [];
   const API_URL = '/api/events';
 

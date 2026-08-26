@@ -111,7 +111,14 @@ loadStatistics();
 </script>
 
 <script>
-  requireAdmin();
+  function checkAuth() {
+    if (typeof window.requireAdmin === "function") {
+        window.requireAdmin();
+    } else {
+        setTimeout(checkAuth, 50);
+    }
+}
+checkAuth();
   const user = getCurrentUser();
   if(user) {
     document.getElementById('topName').textContent = user.username;

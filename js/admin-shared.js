@@ -9,11 +9,18 @@ document.addEventListener('DOMContentLoaded', function() {
   fixAdminPaths();
 
   // Load user info
-  const user = getCurrentUser();
-  const userNameEl = document.getElementById('adminUserName');
-  const userRoleEl = document.getElementById('adminUserRole');
-  if (userNameEl && user) userNameEl.textContent = user.username || 'Admin';
-  if (userRoleEl && user) userRoleEl.textContent = user.role || '';
+  function loadUserInfo() {
+    if (typeof window.getCurrentUser !== 'function') {
+      setTimeout(loadUserInfo, 50);
+      return;
+    }
+    const user = window.getCurrentUser();
+    const userNameEl = document.getElementById('adminUserName');
+    const userRoleEl = document.getElementById('adminUserRole');
+    if (userNameEl && user) userNameEl.textContent = user.email || 'Admin';
+    if (userRoleEl && user) userRoleEl.textContent = user.role || '';
+  }
+  loadUserInfo();
 
   // Logout button
   const logoutBtn = document.getElementById('logoutBtn');
