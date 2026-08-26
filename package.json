@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "Website Resmi & Sistem Informasi DPW IMABA Malang - Ikatan Mahasiswa Bata-Bata Wilayah Malang",
   "main": "server/server.js",
+  "engines": {
+    "node": "18.x"
+  },
   "scripts": {
     "start": "node server/server.js",
     "dev": "node server/server.js",
