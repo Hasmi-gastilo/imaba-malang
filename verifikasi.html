@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verifikasi Anggota - DPW IMABA MALANG</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/responsive.css">
+    <style>
+        .verification-page {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 50%, var(--secondary) 100%);
+            padding: var(--spacing-lg);
+        }
+
+        .verification-card {
+            background: var(--white);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-xl);
+            padding: var(--spacing-xxl);
+            width: 100%;
+            max-width: 500px;
+            text-align: center;
+        }
+
+        .verification-icon {
+            width: 100px;
+            height: 100px;
+            margin: 0 auto var(--spacing-lg);
+            background: linear-gradient(135deg, var(--success), #20c997);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .verification-icon.error {
+            background: linear-gradient(135deg, var(--danger), #e85d6a);
+        }
+
+        .verification-icon svg {
+            width: 60px;
+            height: 60px;
+            color: var(--white);
+        }
+
+        .verification-status {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--success);
+            margin-bottom: var(--spacing-md);
+        }
+
+        .verification-status.error {
+            color: var(--danger);
+        }
+
+        .member-photo {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin: 0 auto var(--spacing-lg);
+            border: 5px solid var(--primary);
+            box-shadow: var(--shadow-md);
+        }
+
+        .member-info {
+            background: var(--off-white);
+            padding: var(--spacing-lg);
+            border-radius: var(--radius-md);
+            margin-top: var(--spacing-lg);
+            text-align: left;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: var(--spacing-sm) 0;
+            border-bottom: 1px solid var(--light-gray);
+        }
+
+        .info-row:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            color: var(--gray);
+            font-weight: 600;
+        }
+
+        .info-value {
+            color: var(--dark-gray);
+            font-weight: 700;
+            text-align: right;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px var(--spacing-sm);
+            border-radius: var(--radius-sm);
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-badge.active {
+            background: var(--success);
+            color: var(--white);
+        }
+
+        .status-badge.inactive {
+            background: var(--gray);
+            color: var(--white);
+        }
+
+        .status-badge.alumni {
+            background: var(--accent);
+            color: var(--white);
+        }
+
+        .loading {
+            text-align: center;
+            padding: var(--spacing-xxl) 0;
+        }
+
+        .spinner {
+            width: 60px;
+            height: 60px;
+            border: 5px solid var(--light-gray);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto var(--spacing-md);
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .back-btn {
+            margin-top: var(--spacing-xl);
+            background: var(--primary);
+            color: var(--white);
+            padding: var(--spacing-sm) var(--spacing-xl);
+            border-radius: var(--radius-md);
+            text-decoration: none;
+            display: inline-block;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+
+        .back-btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+    </style>
+</head>
+<body>
+    <div class="verification-page">
+        <div class="verification-card">
+            <div id="loadingState" class="loading">
+                <div class="spinner"></div>
+                <p>Memverifikasi...</p>
+            </div>
+
+            <div id="successState" style="display: none;">
+                <div class="verification-icon">
+                    <svg viewBox="0 0 24 24" fill="none">
+                        <path d="M9 12L11 14L15 10M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+                
+                <h1 class="verification-status">✅ ANGGOTA TERVERIFIKASI</h1>
+                <p style="color: var(--gray); margin-bottom: var(--spacing-lg);">
+                    Data anggota ditemukan dalam database DPW IMABA Malang
+                </p>
+
+                <img id="memberPhoto" src="" alt="Foto Anggota" class="member-photo" style="display: none;">
+                
+                <div class="member-info">
+                    <div class="info-row">
+                        <span class="info-label">Nama</span>
+                        <span class="info-value" id="memberName">-</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">ID Anggota</span>
+                        <span class="info-value" id="memberId">-</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Universitas</span>
+                        <span class="info-value" id="memberUniversity">-</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Angkatan</span>
+                        <span class="info-value" id="memberBatch">-</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">DPW</span>
+                        <span class="info-value">Malang</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Status</span>
+                        <span class="info-value">
+                            <span id="memberStatus" class="status-badge">-</span>
+                        </span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Bergabung</span>
+                        <span class="info-value" id="memberJoinDate">-</span>
+                    </div>
+                </div>
+
+                <a href="index.html" class="back-btn">Kembali ke Beranda</a>
+            </div>
+
+            <div id="errorState" style="display: none;">
+                <div class="verification-icon error">
+                    <svg viewBox="0 0 24 24" fill="none">
+                        <path d="M12 8V12M12 16H12.01M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+                
+                <h1 class="verification-status error">❌ VERIFIKASI GAGAL</h1>
+                <p style="color: var(--gray); margin-bottom: var(--spacing-lg);" id="errorMessage">
+                    Data anggota tidak ditemukan dalam database
+                </p>
+
+                <a href="index.html" class="back-btn">Kembali ke Beranda</a>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="js/api.js"></script>
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const memberId = urlParams.get('id');
+
+        const loadingState = document.getElementById('loadingState');
+        const successState = document.getElementById('successState');
+        const errorState = document.getElementById('errorState');
+
+        async function verifyMember() {
+            if (!memberId) {
+                showError('ID anggota tidak ditemukan dalam URL');
+                return;
+            }
+
+            try {
+                const response = await api.verifyMember(memberId);
+
+                if (response.success && response.data) {
+                    showSuccess(response.data);
+                } else {
+                    showError(response.message || 'Anggota tidak ditemukan');
+                }
+            } catch (error) {
+                console.error('Verification error:', error);
+                showError('Terjadi kesalahan saat memverifikasi. Pastikan Anda terhubung ke internet.');
+            }
+        }
+
+        function showSuccess(member) {
+            loadingState.style.display = 'none';
+            successState.style.display = 'block';
+
+            // Set member data
+            document.getElementById('memberName').textContent = member.fullName;
+            document.getElementById('memberId').textContent = member.memberId;
+            document.getElementById('memberUniversity').textContent = member.university;
+            document.getElementById('memberBatch').textContent = member.batch;
+            document.getElementById('memberJoinDate').textContent = formatDate(member.joinDate);
+
+            // Set status badge
+            const statusBadge = document.getElementById('memberStatus');
+            statusBadge.textContent = member.status;
+            statusBadge.className = 'status-badge ' + member.status.toLowerCase();
+
+            // Set photo if available
+            if (member.photo) {
+                const photoEl = document.getElementById('memberPhoto');
+                photoEl.src = member.photo;
+                photoEl.style.display = 'block';
+            }
+        }
+
+        function showError(message) {
+            loadingState.style.display = 'none';
+            errorState.style.display = 'block';
+            document.getElementById('errorMessage').textContent = message;
+        }
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('id-ID', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+        }
+
+        // Start verification
+        verifyMember();
+    </script>
+</body>
+</html>

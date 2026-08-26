@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - DPW IMABA MALANG</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/responsive.css">
+    <style>
+        .login-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 50%, var(--secondary) 100%);
+            padding: var(--spacing-lg);
+        }
+
+        .login-card {
+            background: var(--white);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-xl);
+            padding: var(--spacing-xxl);
+            width: 100%;
+            max-width: 450px;
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .login-logo {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto var(--spacing-md);
+            box-shadow: var(--shadow-md);
+        }
+
+        .login-logo span {
+            color: var(--white);
+            font-weight: 700;
+            font-size: 1.5rem;
+            letter-spacing: 2px;
+        }
+
+        .login-header h1 {
+            color: var(--dark-gray);
+            font-size: 1.8rem;
+            margin-bottom: var(--spacing-xs);
+            font-weight: 700;
+        }
+
+        .login-header p {
+            color: var(--gray);
+            font-size: 0.95rem;
+        }
+
+        .form-group {
+            margin-bottom: var(--spacing-md);
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: var(--spacing-xs);
+            color: var(--dark-gray);
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: var(--spacing-sm) var(--spacing-md);
+            border: 2px solid var(--light-gray);
+            border-radius: var(--radius-md);
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(45, 95, 63, 0.1);
+        }
+
+        .form-group input.error {
+            border-color: var(--danger);
+        }
+
+        .error-message {
+            color: var(--danger);
+            font-size: 0.85rem;
+            margin-top: var(--spacing-xs);
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        .form-actions {
+            margin-top: var(--spacing-xl);
+        }
+
+        .btn-login-submit {
+            width: 100%;
+            background: var(--primary);
+            color: var(--white);
+            padding: var(--spacing-md);
+            border: none;
+            border-radius: var(--radius-md);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .btn-login-submit:hover:not(:disabled) {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .btn-login-submit:disabled {
+            background: var(--gray);
+            cursor: not-allowed;
+        }
+
+        .login-footer {
+            text-align: center;
+            margin-top: var(--spacing-lg);
+            padding-top: var(--spacing-lg);
+            border-top: 1px solid var(--light-gray);
+        }
+
+        .login-footer p {
+            color: var(--gray);
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .login-footer a {
+            color: var(--primary);
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        .login-footer a:hover {
+            color: var(--primary-light);
+        }
+
+        .back-home {
+            position: absolute;
+            top: var(--spacing-lg);
+            left: var(--spacing-lg);
+        }
+
+        .back-home a {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+            color: var(--white);
+            font-weight: 600;
+            padding: var(--spacing-sm) var(--spacing-md);
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            border-radius: var(--radius-md);
+            transition: var(--transition);
+        }
+
+        .back-home a:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="back-home">
+            <a href="index.html">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                    <path d="M15 10H5M5 10L9 6M5 10L9 14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+                Kembali ke Beranda
+            </a>
+        </div>
+
+        <div class="login-card">
+            <div class="login-header">
+                <div class="login-logo">
+                    <span>IMABA</span>
+                </div>
+                <h1>Selamat Datang</h1>
+                <p>Login ke akun DPW IMABA Malang Anda</p>
+            </div>
+
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input 
+                        type="email" 
+                        id="email" 
+                        name="email" 
+                        placeholder="email@example.com"
+                        required
+                    >
+                    <span class="error-message" id="emailError"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input 
+                        type="password" 
+                        id="password" 
+                        name="password" 
+                        placeholder="Masukkan password"
+                        required
+                    >
+                    <span class="error-message" id="passwordError"></span>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn-login-submit" id="submitBtn">
+                        Login
+                    </button>
+                </div>
+            </form>
+
+            <div class="login-footer">
+                <p>Belum punya akun?</p>
+                <a href="daftar.html">Daftar sebagai anggota →</a>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="js/api.js"></script>
+    <script>
+        const loginForm = document.getElementById('loginForm');
+        const emailInput = document.getElementById('email');
+        const passwordInput = document.getElementById('password');
+        const submitBtn = document.getElementById('submitBtn');
+        // Check if already logged in
+        if (isAuthenticated()) {
+            const user = getCurrentUser();
+            if (hasRole(['SUPER_ADMIN', 'ADMIN', 'EDITOR', 'KADERISASI_ADMIN'])) {
+                window.location.href = './admin/index.html';
+            } else {
+                window.location.href = 'index.html';
+            }
+        }
+
+        loginForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            // Clear previous errors
+            document.querySelectorAll('.error-message').forEach(el => {
+                el.classList.remove('show');
+            });
+            document.querySelectorAll('input').forEach(el => {
+                el.classList.remove('error');
+            });
+
+            const email = emailInput.value.trim();
+            const password = passwordInput.value;
+
+            // Validation
+            let hasError = false;
+
+            if (!email) {
+                showError('email', 'Email harus diisi');
+                hasError = true;
+            }
+
+            if (!password) {
+                showError('password', 'Password harus diisi');
+                hasError = true;
+            }
+
+            if (hasError) return;
+
+            // Disable submit button
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Memproses...';
+
+            try {
+                const response = await api.login(email, password);
+                
+                if (response.success) {
+                    // Save token and user data
+                    api.setToken(response.data.token);
+                    saveUser(response.data.user);
+
+                    // Show success message
+                    showToast('Login berhasil! Mengalihkan...', 'success');
+
+                    // Redirect based on role
+                    setTimeout(() => {
+                        if (hasRole(['SUPER_ADMIN', 'ADMIN', 'EDITOR', 'KADERISASI_ADMIN'])) {
+                            window.location.href = './admin/index.html';
+                        } else {
+                            window.location.href = 'index.html';
+                        }
+                    }, 1500);
+                } else {
+                    showToast(response.message || 'Login gagal', 'error');
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Login';
+                }
+            } catch (error) {
+                console.error('Login error:', error);
+                showToast(error.message || 'Terjadi kesalahan. Silakan coba lagi.', 'error');
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Login';
+            }
+        });
+
+        function showError(field, message) {
+            const input = document.getElementById(field);
+            const errorEl = document.getElementById(field + 'Error');
+            
+            input.classList.add('error');
+            errorEl.textContent = message;
+            errorEl.classList.add('show');
+        }
+
+        function showToast(message, type = 'info') {
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type}`;
+            toast.textContent = message;
+            
+            toast.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: ${type === 'success' ? '#28a745' : type === 'error' ? '#dc3545' : '#17a2b8'};
+                color: white;
+                padding: 1rem 1.5rem;
+                border-radius: 8px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                z-index: 9999;
+                animation: slideIn 0.3s ease;
+            `;
+            
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.animation = 'slideOut 0.3s ease';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // Add CSS animations
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideIn {
+                from {
+                    transform: translateX(100%);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+            }
+            
+            @keyframes slideOut {
+                from {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+                to {
+                    transform: translateX(100%);
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>

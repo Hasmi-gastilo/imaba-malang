@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kelola Berita - Admin IMABA</title>
+  
+  <link rel="stylesheet" href="../css/admin-common.css">
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="sidebar-header">
+    <a href="index.html" class="sidebar-brand">IMABA<span>Admin</span></a>
+  </div>
+  <ul class="sidebar-menu">
+    <li><a href="index.html" class=""><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg> Dashboard</a></li>
+    <li><a href="anggota.html" class=""><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> Anggota</a></li>
+    <li><a href="pendaftaran.html" class=""><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg> Pendaftaran</a></li>
+    <li><a href="pengurus.html" class=""><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> Kepengurusan</a></li>
+    <li><a href="berita.html" class="active"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 32V9a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2z"/><path d="M19 9l5 5v11a2 2 0 0 1-2 2h-3"/></svg> Berita</a></li>
+    <li><a href="agenda.html" class=""><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> Agenda</a></li>
+    <li><a href="program.html" class=""><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg> Program</a></li>
+    <li><a href="pengaturan_beranda.html" class=""><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg> Beranda</a></li>
+    <li><a href="pengaturan.html" class=""><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg> Pengaturan</a></li>
+  </ul>
+  <div class="sidebar-footer">
+    <button class="btn-logout" onclick="logout()">
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg> Keluar
+    </button>
+  </div>
+</aside>
+
+<main class="main">
+  <div class="topbar">
+    <h1>Kelola Berita</h1>
+    <div class="user-info">
+      <span id="adminUserName">Admin</span>
+      <div class="user-avatar">A</div>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">Daftar Berita</span>
+        <button class="btn btn-primary" onclick="openCreateModal()">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Tambah Berita
+        </button>
+      </div>
+
+      <div class="filters">
+        <input type="text" id="searchInput" placeholder="Cari judul berita..." oninput="filterTable()">
+        <select id="categoryFilter" onchange="filterTable()">
+          <option value="">Semua Kategori</option>
+          <option value="Berita IMABA">Berita IMABA</option>
+          <option value="Kegiatan">Kegiatan</option>
+          <option value="Pendidikan">Pendidikan</option>
+          <option value="Keagamaan">Keagamaan</option>
+          <option value="Prestasi">Prestasi</option>
+          <option value="Alumni">Alumni</option>
+          <option value="Opini">Opini</option>
+        </select>
+        <select id="statusFilter" onchange="filterTable()">
+          <option value="">Semua Status</option>
+          <option value="published">Dipublish</option>
+          <option value="draft">Draft</option>
+        </select>
+      </div>
+
+      <div class="table-wrapper">
+        <table id="newsTable">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Thumbnail</th>
+              <th>Judul</th>
+              <th>Kategori</th>
+              <th>Status</th>
+              <th>Tanggal</th>
+              <th>Aksi</th>
+            </tr>
+          </thead>
+          <tbody id="newsTableBody">
+            <tr class="loading-row"><td colspan="7">Memuat data berita...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- Modal Tambah/Edit Berita -->
+<div class="modal-overlay" id="newsModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 class="modal-title" id="modalTitle">Tambah Berita</h2>
+      <button class="modal-close" onclick="hideModal('newsModal')">&times;</button>
+    </div>
+    <form id="newsForm" onsubmit="handleSubmit(event)">
+      <input type="hidden" id="newsId">
+      <div class="form-group">
+        <label>Judul Berita *</label>
+        <input type="text" id="newsTitle" required placeholder="Masukkan judul berita...">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Kategori *</label>
+          <select id="newsCategory" required>
+            <option value="Berita IMABA">Berita IMABA</option>
+            <option value="Kegiatan">Kegiatan</option>
+            <option value="Pendidikan">Pendidikan</option>
+            <option value="Keagamaan">Keagamaan</option>
+            <option value="Prestasi">Prestasi</option>
+            <option value="Alumni">Alumni</option>
+            <option value="Opini">Opini</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Status Publikasi</label>
+          <select id="newsPublished">
+            <option value="false">Draft</option>
+            <option value="true">Publish Sekarang</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Upload Thumbnail/Gambar Berita</label>
+        <div style="display: flex; gap: 10px; align-items: center;">
+          <input type="file" id="newsThumbnailFile" accept="image/*" style="flex: 1;">
+          <input type="hidden" id="newsThumbnail">
+          <img id="newsThumbnailPreview" style="display:none; width:60px; height:60px; object-fit:cover; border-radius:4px; border:1px solid #ccc;">
+        </div>
+        <small style="color:#888;">Biarkan kosong jika tidak ingin mengubah gambar.</small>
+      </div>
+      <div class="form-group">
+        <label>Ringkasan (Excerpt) *</label>
+        <textarea id="newsExcerpt" rows="3" required placeholder="Ringkasan singkat berita..."></textarea>
+      </div>
+      <div class="form-group">
+        <label>Isi Berita (Konten) *</label>
+        <textarea id="newsContent" rows="8" required placeholder="Tulis isi berita lengkap di sini..."></textarea>
+      </div>
+      <div class="form-group">
+        <label>Tags (pisahkan dengan koma)</label>
+        <input type="text" id="newsTags" placeholder="imaba, kegiatan, malang">
+      </div>
+      <div class="form-actions">
+        <button type="button" class="btn btn-secondary" onclick="hideModal('newsModal')">Batal</button>
+        <button type="submit" class="btn btn-primary" id="submitBtn">Simpan Berita</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script type="module" src="../js/api.js"></script>
+<script src="../js/admin-shared.js"></script>
+<script>
+  let allNews = [];
+  const API_URL = '/api/news';
+
+  // Load news on page load
+  document.addEventListener('DOMContentLoaded', loadNews);
+
+  async function loadNews() {
+    const tbody = document.getElementById('newsTableBody');
+    try {
+      const res = await adminFetch(`${API_URL}/admin/all`);
+      allNews = res.data.news || [];
+      renderTable(allNews);
+    } catch (err) {
+      // If server not running, show demo data
+      allNews = getDemoData();
+      renderTable(allNews);
+    }
+  }
+
+  function getDemoData() {
+    return [
+      { _id: '1', title: 'Rapat Kerja IMABA 2024', category: 'Berita IMABA', isPublished: true, publishedAt: new Date(), thumbnail: '', excerpt: 'IMABA Malang mengadakan rapat kerja tahunan...' },
+      { _id: '2', title: 'Kajian Rutin Ramadhan', category: 'Keagamaan', isPublished: false, publishedAt: null, thumbnail: '', excerpt: 'Kajian rutin yang diadakan setiap minggu...' },
+    ];
+  }
+
+  function renderTable(data) {
+    const tbody = document.getElementById('newsTableBody');
+    if (!data.length) {
+      tbody.innerHTML = '<tr><td colspan="7"><div class="empty-state"><svg width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 0-2-2z"/></svg><p>Belum ada berita. Klik "Tambah Berita" untuk memulai.</p></div></td></tr>';
+      return;
+    }
+    tbody.innerHTML = data.map((n, i) => `
+      <tr data-id="${n._id}" data-published="${n.isPublished}" data-category="${n.category}">
+        <td>${i + 1}</td>
+        <td>${n.thumbnail ? `<img src="${n.thumbnail}" class="img-preview" onerror="this.style.display='none'">` : '<span style="color:#ccc;font-size:0.8rem">—</span>'}</td>
+        <td><strong>${n.title}</strong><br><small style="color:#888">${truncate(n.excerpt || '', 60)}</small></td>
+        <td><span class="badge badge-secondary">${n.category}</span></td>
+        <td><span class="badge ${n.isPublished ? 'badge-success' : 'badge-warning'}">${n.isPublished ? 'Published' : 'Draft'}</span></td>
+        <td>${n.isPublished ? formatDate(n.publishedAt) : '-'}</td>
+        <td>
+          <button class="btn btn-warning btn-sm" onclick="openEditModal('${n._id}')">Edit</button>
+          <button class="btn btn-danger btn-sm" onclick="deleteNews('${n._id}', '${n.title}')">Hapus</button>
+        </td>
+      </tr>
+    `).join('');
+  }
+
+  function filterTable() {
+    const search = document.getElementById('searchInput').value.toLowerCase();
+    const cat = document.getElementById('categoryFilter').value;
+    const status = document.getElementById('statusFilter').value;
+    const filtered = allNews.filter(n => {
+      const matchSearch = n.title.toLowerCase().includes(search);
+      const matchCat = !cat || n.category === cat;
+      const matchStatus = !status || (status === 'published' ? n.isPublished : !n.isPublished);
+      return matchSearch && matchCat && matchStatus;
+    });
+    renderTable(filtered);
+  }
+
+  function openCreateModal() {
+    document.getElementById('modalTitle').textContent = 'Tambah Berita Baru';
+    document.getElementById('newsForm').reset();
+    document.getElementById('newsId').value = '';
+    document.getElementById('newsThumbnail').value = '';
+    document.getElementById('newsThumbnailPreview').style.display = 'none';
+    document.getElementById('submitBtn').textContent = 'Simpan Berita';
+    showModal('newsModal');
+  }
+
+  function openEditModal(id) {
+    const news = allNews.find(n => n._id == id);
+    if (!news) return;
+    document.getElementById('modalTitle').textContent = 'Edit Berita';
+    document.getElementById('newsId').value = news._id;
+    document.getElementById('newsTitle').value = news.title || '';
+    document.getElementById('newsCategory').value = news.category || 'Berita IMABA';
+    document.getElementById('newsPublished').value = news.isPublished ? 'true' : 'false';
+    document.getElementById('newsThumbnail').value = news.thumbnail || '';
+    
+    const preview = document.getElementById('newsThumbnailPreview');
+    if (news.thumbnail) {
+      preview.src = news.thumbnail;
+      preview.style.display = 'block';
+    } else {
+      preview.style.display = 'none';
+    }
+    
+    document.getElementById('newsExcerpt').value = news.excerpt || '';
+    document.getElementById('newsContent').value = news.content || '';
+    document.getElementById('newsTags').value = (news.tags || []).join(', ');
+    document.getElementById('submitBtn').textContent = 'Update Berita';
+    showModal('newsModal');
+  }
+
+  // Handle file preview when selected
+  document.getElementById('newsThumbnailFile').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const preview = document.getElementById('newsThumbnailPreview');
+        preview.src = e.target.result;
+        preview.style.display = 'block';
+      }
+      reader.readAsDataURL(file);
+    }
+  });
+
+  async function handleSubmit(e) {
+    e.preventDefault();
+    const submitBtn = document.getElementById('submitBtn');
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Menyimpan...';
+
+    try {
+      // Handle file upload first if a new file is selected
+      const fileInput = document.getElementById('newsThumbnailFile');
+      let thumbnailUrl = document.getElementById('newsThumbnail').value;
+      
+      if (fileInput.files.length > 0) {
+        submitBtn.textContent = 'Mengupload Gambar...';
+        thumbnailUrl = await uploadImageToServer(fileInput.files[0]);
+      }
+
+      const id = document.getElementById('newsId').value;
+      const payload = {
+        title: document.getElementById('newsTitle').value,
+        category: document.getElementById('newsCategory').value,
+        isPublished: document.getElementById('newsPublished').value,
+        thumbnail: thumbnailUrl,
+        excerpt: document.getElementById('newsExcerpt').value,
+        content: document.getElementById('newsContent').value,
+        tags: document.getElementById('newsTags').value
+      };
+
+      submitBtn.textContent = 'Menyimpan Data...';
+
+      if (id) {
+        await adminFetch(`${API_URL}/${id}`, { method: 'PUT', body: JSON.stringify(payload) });
+        showAdminToast('Berita berhasil diperbarui!');
+      } else {
+        await adminFetch(API_URL, { method: 'POST', body: JSON.stringify(payload) });
+        showAdminToast('Berita berhasil ditambahkan!');
+      }
+      hideModal('newsModal');
+      loadNews();
+    } catch (err) {
+      showAdminToast(err.message || 'Gagal menyimpan berita', 'error');
+    } finally {
+      submitBtn.disabled = false;
+      const id = document.getElementById('newsId').value;
+      submitBtn.textContent = id ? 'Update Berita' : 'Simpan Berita';
+    }
+  }
+
+  async function deleteNews(id, title) {
+    if (!confirmDelete(title)) return;
+    try {
+      await adminFetch(`${API_URL}/${id}`, { method: 'DELETE' });
+      showAdminToast('Berita berhasil dihapus!');
+      loadNews();
+    } catch (err) {
+      showAdminToast(err.message || 'Gagal menghapus berita', 'error');
+    }
+  }
+</script>
+</body>
+</html>
