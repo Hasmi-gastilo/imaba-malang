@@ -190,6 +190,24 @@ class API {
   }
 
   // ===================================
+  // PROGRAM APIs
+  // ===================================
+
+  async getAllPrograms(params = {}) {
+    try {
+      const progCol = collection(db, "programs");
+      // Add ordering if necessary, assuming there's a createdAt or similar field. 
+      // We can just get all for now.
+      const querySnapshot = await getDocs(progCol);
+      const programsList = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      return { success: true, data: programsList };
+    } catch (error) {
+      console.error("Error fetching programs:", error);
+      throw error;
+    }
+  }
+
+  // ===================================
   // MEMBER APIs
   // ===================================
 

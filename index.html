@@ -299,8 +299,12 @@
     <script>
         async function loadHomepage() {
             try {
-                const res = await fetch('/api/homepage');
-                const json = await res.json();
+                // Wait until api is loaded
+                if (!window.api) {
+                    setTimeout(loadHomepage, 50);
+                    return;
+                }
+                const json = await window.api.getHomepageData();
                 if (json.success && json.data) {
                     const d = json.data;
 
