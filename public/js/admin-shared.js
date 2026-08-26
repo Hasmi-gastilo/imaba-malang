@@ -66,7 +66,7 @@ function showAdminToast(message, type = 'success') {
 // Generic API calls that include auth token
 async function adminFetch(url, options = {}) {
   if (url.startsWith('/api/')) {
-    url = 'http://localhost:3000' + url;
+    url = url;
   }
   const token = localStorage.getItem('token');
   const headers = { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) };
@@ -112,7 +112,7 @@ async function uploadImageToServer(file) {
   const headers = {};
   if (token) headers['Authorization'] = `Bearer ${token}`;
 
-  const res = await fetch('http://localhost:3000/api/upload', {
+  const res = await fetch('/api/upload', {
     method: 'POST',
     headers: headers,
     body: formData

@@ -91,20 +91,24 @@ app.get('*', (req, res) => {
 app.use(errorMiddleware);
 
 // Start server
-app.listen(PORT, () => {
-  console.log(`
-╔═══════════════════════════════════════════════════╗
-║                                                   ║
-║        DPW IMABA MALANG - SERVER RUNNING         ║
-║                                                   ║
-║  Server: http://localhost:${PORT}                  ║
-║  Environment: ${process.env.NODE_ENV || 'development'}                      ║
-║                                                   ║
-╚═══════════════════════════════════════════════════╝
-  `);
-});
+if (process.env.NODE_ENV !== 'production') {
+  app.listen(PORT, () => {
+    console.log(`
+  ╔═══════════════════════════════════════════════════╗
+  ║                                                   ║
+  ║        DPW IMABA MALANG - SERVER RUNNING         ║
+  ║                                                   ║
+  ║  Server: http://localhost:${PORT}                  ║
+  ║  Environment: ${process.env.NODE_ENV || 'development'}                      ║
+  ║                                                   ║
+  ╚═══════════════════════════════════════════════════╝
+    `);
+  });
+}
 
 // Handle unhandled promise rejections
 process.on('unhandledRejection', (err) => {
   console.error('Unhandled Promise Rejection:', err);
 });
+
+module.exports = app;

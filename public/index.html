@@ -299,7 +299,7 @@
     <script>
         async function loadHomepage() {
             try {
-                const res = await fetch('http://localhost:3000/api/homepage');
+                const res = await fetch('/api/homepage');
                 const json = await res.json();
                 if (json.success && json.data) {
                     const d = json.data;

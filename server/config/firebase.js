@@ -29,8 +29,12 @@ try {
   console.error("❌ Gagal menginisialisasi Firebase Admin SDK:", error.message);
 }
 
-const db = getFirestore();
-const auth = getAuth();
-const bucket = getStorage().bucket();
+const db = () => getFirestore();
+const auth = () => getAuth();
+const bucket = () => getStorage().bucket();
 
-module.exports = { db, auth, bucket };
+module.exports = { 
+  get db() { return db(); }, 
+  get auth() { return auth(); }, 
+  get bucket() { return bucket(); } 
+};

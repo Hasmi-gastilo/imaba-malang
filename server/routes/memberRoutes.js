@@ -12,7 +12,7 @@ router.get('/verify/:memberId', memberController.getMemberByMemberId);
 router.post('/apply', upload.single('photo'), memberController.createApplication);
 
 // Protected routes
-router.get('/stats', authMiddleware, memberController.getMemberStats);
+router.get('/stats', memberController.getMemberStats);
 router.get('/:id', authMiddleware, memberController.getMemberById);
 
 // Admin routes
