@@ -121,7 +121,7 @@
     display: none; /* Hide search icon on mobile or make it a full search bar */
   }
 
-  .dropdown-menu {
+    .dropdown-menu {
     position: static;
     opacity: 1;
     visibility: visible;
@@ -129,14 +129,37 @@
     box-shadow: none;
     max-height: 0;
     overflow: hidden;
-    transition: max-height 0.3s ease;
-    background: var(--off-white);
-    border-radius: var(--radius-md);
-    margin-top: var(--spacing-xs);
+    transition: max-height 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    background: transparent;
+    border-radius: 0;
+    margin-top: 0;
+    padding: 0;
+    border: none;
+  }
+  
+  .dropdown-menu::before {
+    display: none;
   }
 
   .dropdown.active .dropdown-menu {
-    max-height: 300px;
+    max-height: 400px;
+  }
+  
+  .dropdown-menu li {
+    margin-bottom: 5px;
+  }
+  
+  .dropdown-menu li a {
+    padding: 12px 20px 12px 40px;
+    background: rgba(45, 95, 63, 0.03);
+    border-radius: 10px;
+    border-left: 3px solid transparent;
+  }
+  
+  .dropdown-menu li a:hover, .dropdown-menu li a.active {
+    background: var(--primary-light);
+    border-left: 3px solid var(--primary);
+    padding-left: 45px;
   }
 
   .btn-daftar,
