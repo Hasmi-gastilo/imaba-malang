@@ -17,6 +17,12 @@ import {
   where,
   orderBy
 } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+import { 
+  ref, 
+  uploadBytes, 
+  getDownloadURL 
+} from "https://www.gstatic.com/firebasejs/10.8.1/firebase-storage.js";
+import { storage } from './firebase-init.js';
 
 /**
  * API Communication Handler (Firebase Client SDK Version)
@@ -207,6 +213,26 @@ class API {
     } catch (error) {
       console.error("Error fetching member stats:", error);
       return { success: true, data: { totalMembers: 0 } };
+    }
+  }
+
+  // ===================================
+  // STORAGE APIs
+  // ===================================
+
+  async uploadImage(file, path = 'uploads') {
+    try {
+      const extension = file.name.split('.').pop();
+      const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${extension}`;
+      const storageRef = ref(storage, `${path}/${fileName}`);
+      
+      const snapshot = await uploadBytes(storageRef, file);
+      const downloadURL = await getDownloadURL(snapshot.ref);
+      
+      return { success: true, url: downloadURL };
+    } catch (error) {
+      console.error("Error uploading image:", error);
+      throw error;
     }
   }
 

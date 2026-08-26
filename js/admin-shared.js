@@ -105,20 +105,14 @@ function truncate(text, len = 80) {
 
 // Upload image to server
 async function uploadImageToServer(file) {
-  const formData = new FormData();
-  formData.append('image', file);
-  
-  const token = localStorage.getItem('token');
-  const headers = {};
-  if (token) headers['Authorization'] = `Bearer ${token}`;
-
-  const res = await fetch('/api/upload', {
-    method: 'POST',
-    headers: headers,
-    body: formData
-  });
-  
-  const data = await res.json();
-  if (!res.ok) throw new Error(data.message || 'Gagal mengupload gambar');
-  return data.data.url;
+  try {
+    const response = await window.api.uploadImage(file);
+    if (response.success) {
+      return response.url;
+    } else {
+      throw new Error('Gagal mengupload gambar');
+    }
+  } catch (error) {
+    throw new Error(error.message || 'Gagal mengupload gambar');
+  }
 }
