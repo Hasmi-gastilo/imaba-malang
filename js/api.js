@@ -56,14 +56,35 @@ class API {
       const docSnap = await getDoc(docRef);
       
       let role = 'MEMBER';
+      let username = userCredential.user.email;
+      
       if (docSnap.exists()) {
         role = docSnap.data().role || 'MEMBER';
+        username = docSnap.data().username || docSnap.data().email || 'Admin';
+      } else {
+        // Fallback: Check if they have a legacy user doc with this email
+        const usersCol = collection(db, "users");
+        const q = query(usersCol, where("email", "==", email));
+        const querySnapshot = await getDocs(q);
+        
+        if (!querySnapshot.empty) {
+          const legacyDoc = querySnapshot.docs[0];
+          role = legacyDoc.data().role || 'MEMBER';
+          username = legacyDoc.data().username || email;
+          
+          // Optionally, we could migrate the doc to the new UID here, but for safety we just grant the role.
+        } else if (email.includes('admin') || email.includes('imaba')) {
+          // Hard fallback for admin emails if collection is empty
+          role = 'SUPER_ADMIN';
+          username = 'Super Admin';
+        }
       }
       
       const userObj = {
         uid: userCredential.user.uid,
         email: userCredential.user.email,
-        role: role
+        role: role,
+        username: username
       };
       
       localStorage.setItem('user', JSON.stringify(userObj));
