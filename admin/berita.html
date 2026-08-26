@@ -166,8 +166,12 @@
   async function loadNews() {
     const tbody = document.getElementById('newsTableBody');
     try {
-      const res = await adminFetch(`${API_URL}/admin/all`);
-      allNews = res.data.news || [];
+      if (!window.api) {
+        setTimeout(loadNews, 50);
+        return;
+      }
+      const res = await window.api.getAllNews();
+      allNews = res.data || [];
       renderTable(allNews);
     } catch (err) {
       // If server not running, show demo data
@@ -296,11 +300,13 @@
 
       submitBtn.textContent = 'Menyimpan Data...';
 
+      payload.isPublished = payload.isPublished === 'true' || payload.isPublished === true;
+
       if (id) {
-        await adminFetch(`${API_URL}/${id}`, { method: 'PUT', body: JSON.stringify(payload) });
+        await window.api.updateNews(id, payload);
         showAdminToast('Berita berhasil diperbarui!');
       } else {
-        await adminFetch(API_URL, { method: 'POST', body: JSON.stringify(payload) });
+        await window.api.createNews(payload);
         showAdminToast('Berita berhasil ditambahkan!');
       }
       hideModal('newsModal');
@@ -317,7 +323,7 @@
   async function deleteNews(id, title) {
     if (!confirmDelete(title)) return;
     try {
-      await adminFetch(`${API_URL}/${id}`, { method: 'DELETE' });
+      await window.api.deleteNews(id);
       showAdminToast('Berita berhasil dihapus!');
       loadNews();
     } catch (err) {

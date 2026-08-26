@@ -140,6 +140,10 @@
 
   // Load current data from server
   async function loadData() {
+    if (!window.api) {
+        setTimeout(loadData, 50);
+        return;
+    }
     try {
       const res = await api.getHomepageData();
       if (res.success && res.data) {
@@ -176,18 +180,24 @@
     saveBtn.textContent = 'Menyimpan...';
 
     try {
-      const formData = new FormData();
-      formData.append('heroTitle', document.getElementById('heroTitle').value);
-      formData.append('heroSubtitle', document.getElementById('heroSubtitle').value);
-      formData.append('aboutTitle', document.getElementById('aboutTitle').value);
-      formData.append('aboutText', document.getElementById('aboutText').value);
+      const payload = {
+        heroTitle: document.getElementById('heroTitle').value,
+        heroSubtitle: document.getElementById('heroSubtitle').value,
+        aboutTitle: document.getElementById('aboutTitle').value,
+        aboutText: document.getElementById('aboutText').value,
+      };
 
       const heroFile = document.getElementById('heroImageFile').files[0];
       const aboutFile = document.getElementById('aboutImageFile').files[0];
-      if (heroFile) formData.append('heroImage', heroFile);
-      if (aboutFile) formData.append('aboutImage', aboutFile);
+      
+      if (heroFile) {
+        payload.heroImage = await uploadImageToServer(heroFile);
+      }
+      if (aboutFile) {
+        payload.aboutImage = await uploadImageToServer(aboutFile);
+      }
 
-      const res = await api.updateHomepageData(formData, true);
+      const res = await api.updateHomepageData(payload);
       if (res.success) {
         alert('Berhasil menyimpan pengaturan beranda!');
         // Reset file inputs

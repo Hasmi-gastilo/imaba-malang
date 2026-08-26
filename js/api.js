@@ -146,13 +146,48 @@ class API {
     try {
       const newsCol = collection(db, "news");
       let q = query(newsCol, orderBy("createdAt", "desc"));
-      // Add pagination/filtering to query if needed based on params
       
       const querySnapshot = await getDocs(q);
-      const newsList = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      const newsList = querySnapshot.docs.map(doc => ({ _id: doc.id, id: doc.id, ...doc.data() }));
       return { success: true, data: newsList };
     } catch (error) {
       console.error("Error fetching news:", error);
+      throw error;
+    }
+  }
+
+  async createNews(data) {
+    try {
+      const docRef = await addDoc(collection(db, "news"), {
+        ...data,
+        createdAt: new Date().toISOString()
+      });
+      return { success: true, data: { _id: docRef.id } };
+    } catch (error) {
+      console.error("Error creating news:", error);
+      throw error;
+    }
+  }
+
+  async updateNews(id, data) {
+    try {
+      await updateDoc(doc(db, "news", id), {
+        ...data,
+        updatedAt: new Date().toISOString()
+      });
+      return { success: true };
+    } catch (error) {
+      console.error("Error updating news:", error);
+      throw error;
+    }
+  }
+
+  async deleteNews(id) {
+    try {
+      await deleteDoc(doc(db, "news", id));
+      return { success: true };
+    } catch (error) {
+      console.error("Error deleting news:", error);
       throw error;
     }
   }
@@ -181,10 +216,46 @@ class API {
       let q = query(eventsCol, orderBy("date", "desc"));
       
       const querySnapshot = await getDocs(q);
-      const eventsList = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      const eventsList = querySnapshot.docs.map(doc => ({ _id: doc.id, id: doc.id, ...doc.data() }));
       return { success: true, data: eventsList };
     } catch (error) {
       console.error("Error fetching events:", error);
+      throw error;
+    }
+  }
+
+  async createEvent(data) {
+    try {
+      const docRef = await addDoc(collection(db, "events"), {
+        ...data,
+        createdAt: new Date().toISOString()
+      });
+      return { success: true, data: { _id: docRef.id } };
+    } catch (error) {
+      console.error("Error creating event:", error);
+      throw error;
+    }
+  }
+
+  async updateEvent(id, data) {
+    try {
+      await updateDoc(doc(db, "events", id), {
+        ...data,
+        updatedAt: new Date().toISOString()
+      });
+      return { success: true };
+    } catch (error) {
+      console.error("Error updating event:", error);
+      throw error;
+    }
+  }
+
+  async deleteEvent(id) {
+    try {
+      await deleteDoc(doc(db, "events", id));
+      return { success: true };
+    } catch (error) {
+      console.error("Error deleting event:", error);
       throw error;
     }
   }
@@ -196,13 +267,99 @@ class API {
   async getAllPrograms(params = {}) {
     try {
       const progCol = collection(db, "programs");
-      // Add ordering if necessary, assuming there's a createdAt or similar field. 
-      // We can just get all for now.
       const querySnapshot = await getDocs(progCol);
-      const programsList = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      const programsList = querySnapshot.docs.map(doc => ({ _id: doc.id, id: doc.id, ...doc.data() }));
       return { success: true, data: programsList };
     } catch (error) {
       console.error("Error fetching programs:", error);
+      throw error;
+    }
+  }
+
+  async createProgram(data) {
+    try {
+      const docRef = await addDoc(collection(db, "programs"), {
+        ...data,
+        createdAt: new Date().toISOString()
+      });
+      return { success: true, data: { _id: docRef.id } };
+    } catch (error) {
+      console.error("Error creating program:", error);
+      throw error;
+    }
+  }
+
+  async updateProgram(id, data) {
+    try {
+      await updateDoc(doc(db, "programs", id), {
+        ...data,
+        updatedAt: new Date().toISOString()
+      });
+      return { success: true };
+    } catch (error) {
+      console.error("Error updating program:", error);
+      throw error;
+    }
+  }
+
+  async deleteProgram(id) {
+    try {
+      await deleteDoc(doc(db, "programs", id));
+      return { success: true };
+    } catch (error) {
+      console.error("Error deleting program:", error);
+      throw error;
+    }
+  }
+
+  // ===================================
+  // PENGURUS APIs
+  // ===================================
+
+  async getAllPengurus(params = {}) {
+    try {
+      const colRef = collection(db, "pengurus");
+      const querySnapshot = await getDocs(colRef);
+      const list = querySnapshot.docs.map(doc => ({ _id: doc.id, id: doc.id, ...doc.data() }));
+      return { success: true, data: list };
+    } catch (error) {
+      console.error("Error fetching pengurus:", error);
+      throw error;
+    }
+  }
+
+  async createPengurus(data) {
+    try {
+      const docRef = await addDoc(collection(db, "pengurus"), {
+        ...data,
+        createdAt: new Date().toISOString()
+      });
+      return { success: true, data: { _id: docRef.id } };
+    } catch (error) {
+      console.error("Error creating pengurus:", error);
+      throw error;
+    }
+  }
+
+  async updatePengurus(id, data) {
+    try {
+      await updateDoc(doc(db, "pengurus", id), {
+        ...data,
+        updatedAt: new Date().toISOString()
+      });
+      return { success: true };
+    } catch (error) {
+      console.error("Error updating pengurus:", error);
+      throw error;
+    }
+  }
+
+  async deletePengurus(id) {
+    try {
+      await deleteDoc(doc(db, "pengurus", id));
+      return { success: true };
+    } catch (error) {
+      console.error("Error deleting pengurus:", error);
       throw error;
     }
   }
@@ -215,10 +372,20 @@ class API {
     try {
       const memCol = collection(db, "members");
       const querySnapshot = await getDocs(memCol);
-      const list = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      return { success: true, data: list, pagination: { total: list.length, page: 1, pages: 1 } };
+      const list = querySnapshot.docs.map(doc => ({ _id: doc.id, id: doc.id, ...doc.data() }));
+      return { success: true, data: { members: list, pagination: { total: list.length, page: 1, pages: 1 } } };
     } catch (error) {
       console.error("Error fetching members:", error);
+      throw error;
+    }
+  }
+
+  async deleteMember(id) {
+    try {
+      await deleteDoc(doc(db, "members", id));
+      return { success: true };
+    } catch (error) {
+      console.error("Error deleting member:", error);
       throw error;
     }
   }

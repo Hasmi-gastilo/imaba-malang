@@ -95,6 +95,10 @@
   }
 
   async function loadMembers() {
+    if (!window.api) {
+        setTimeout(loadMembers, 50);
+        return;
+    }
     const search = document.getElementById('searchAnggota').value;
     const status = document.getElementById('filterStatus').value;
     const tbody = document.getElementById('membersList');
