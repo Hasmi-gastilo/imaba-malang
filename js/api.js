@@ -1,4 +1,4 @@
-import { auth, db } from './firebase-init.js';
+import { auth, db } from './firebase-init.js?v=1787750196.13692';
 import { 
   signInWithEmailAndPassword, 
   createUserWithEmailAndPassword, 
@@ -22,7 +22,7 @@ import {
   uploadBytes, 
   getDownloadURL 
 } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-storage.js";
-import { storage } from './firebase-init.js';
+import { storage } from './firebase-init.js?v=1787750196.13692';
 
 /**
  * API Communication Handler (Firebase Client SDK Version)
