@@ -286,6 +286,7 @@ ul {
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
+  background-attachment: fixed; /* Parallax effect */
   z-index: 0;
 }
 
