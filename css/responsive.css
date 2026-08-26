@@ -149,11 +149,18 @@
     margin-bottom: 5px;
   }
   
-  .dropdown-menu li a {
+    .dropdown-menu li a {
     padding: 12px 20px 12px 40px;
     background: rgba(45, 95, 63, 0.03);
     border-radius: 10px;
     border-left: 3px solid transparent;
+    color: var(--dark-gray) !important;
+    font-size: 15px !important;
+    display: block !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    text-align: left;
+    -webkit-transform: translateZ(0);
   }
   
   .dropdown-menu li a:hover, .dropdown-menu li a.active {
