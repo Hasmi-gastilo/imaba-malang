@@ -243,14 +243,21 @@
         const passwordInput = document.getElementById('password');
         const submitBtn = document.getElementById('submitBtn');
         // Check if already logged in
-        if (isAuthenticated()) {
-            const user = getCurrentUser();
-            if (hasRole(['SUPER_ADMIN', 'ADMIN', 'EDITOR', 'KADERISASI_ADMIN'])) {
-                window.location.href = './admin/index.html';
-            } else {
-                window.location.href = 'index.html';
+        function checkAuth() {
+            if (typeof window.isAuthenticated !== 'function') {
+                setTimeout(checkAuth, 50);
+                return;
+            }
+            if (window.isAuthenticated()) {
+                const user = window.getCurrentUser();
+                if (window.hasRole(['SUPER_ADMIN', 'ADMIN', 'EDITOR', 'KADERISASI_ADMIN'])) {
+                    window.location.href = './admin/index.html';
+                } else {
+                    window.location.href = 'index.html';
+                }
             }
         }
+        checkAuth();
 
         loginForm.addEventListener('submit', async function(e) {
             e.preventDefault();
@@ -286,19 +293,21 @@
             submitBtn.textContent = 'Memproses...';
 
             try {
-                const response = await api.login(email, password);
+                if (!window.api) {
+                    showToast('API belum siap. Silakan tunggu sebentar.', 'error');
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Login';
+                    return;
+                }
+                const response = await window.api.login(email, password);
                 
                 if (response.success) {
-                    // Save token and user data
-                    api.setToken(response.data.token);
-                    saveUser(response.data.user);
-
                     // Show success message
                     showToast('Login berhasil! Mengalihkan...', 'success');
 
                     // Redirect based on role
                     setTimeout(() => {
-                        if (hasRole(['SUPER_ADMIN', 'ADMIN', 'EDITOR', 'KADERISASI_ADMIN'])) {
+                        if (window.hasRole(['SUPER_ADMIN', 'ADMIN', 'EDITOR', 'KADERISASI_ADMIN'])) {
                             window.location.href = './admin/index.html';
                         } else {
                             window.location.href = 'index.html';

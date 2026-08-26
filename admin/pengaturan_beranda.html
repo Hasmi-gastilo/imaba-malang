@@ -124,11 +124,18 @@
 }
 checkAuth();
 
-  const user = getCurrentUser();
-  if (user) {
-    document.getElementById('topName').textContent = user.username || user.email;
-    document.getElementById('topAvatar').textContent = (user.username || user.email || 'A').charAt(0).toUpperCase();
-  }
+  function updateTopName() {
+    if (typeof window.getCurrentUser !== "function") {
+        setTimeout(updateTopName, 50);
+        return;
+    }
+    const user = window.getCurrentUser();
+    if (user) {
+        const topName = document.getElementById('topName');
+        if (topName) topName.textContent = user.email || user.username || 'Admin';
+    }
+}
+updateTopName();
 
   // Preview image before upload
   function previewImg(input, previewId) {
