@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - DPW IMABA MALANG</title>
-    <link rel="stylesheet" href="css/style.css?v=1787786928.91856">
-    <link rel="stylesheet" href="css/responsive.css?v=1787786919.79736">
+    <link rel="stylesheet" href="css/style.css?v=1787853203">
+    <link rel="stylesheet" href="css/responsive.css?v=1787853203">
     <style>
         .login-container {
             min-height: 100vh;
@@ -17,12 +17,12 @@
         }
 
         .login-card {
-            background: var(--white);
+            background: var(--bg-card);
             border-radius: var(--radius-xl);
             box-shadow: var(--shadow-xl);
             padding: var(--spacing-xxl);
             width: 100%;
-            max-width: 450px;
+            max-width: 380px;
         }
 
         .login-header {
@@ -31,15 +31,12 @@
         }
 
         .login-logo {
-            width: 80px;
-            height: 80px;
-            background: linear-gradient(135deg, var(--primary), var(--primary-light));
-            border-radius: 50%;
+            width: 100px; height: auto;
             display: flex;
             align-items: center;
             justify-content: center;
             margin: 0 auto var(--spacing-md);
-            box-shadow: var(--shadow-md);
+            
         }
 
         .login-logo span {
@@ -190,9 +187,7 @@
 
         <div class="login-card">
             <div class="login-header">
-                <div class="login-logo">
-                    <span>IMABA</span>
-                </div>
+                <div class="login-logo"><img src="img/logo-imaba.png" alt="Logo IMABA"></div>
                 <h1>Selamat Datang</h1>
                 <p>Login ke akun DPW IMABA Malang Anda</p>
             </div>
@@ -236,7 +231,7 @@
         </div>
     </div>
 
-    <script type="module" src="js/api.js?v=1787750187.86751"></script>
+    <script type="module" src="js/api.js?v=1787853203"></script>
     <script>
         const loginForm = document.getElementById('loginForm');
         const emailInput = document.getElementById('email');
@@ -388,5 +383,9 @@
         `;
         document.head.appendChild(style);
     </script>
+    
+
+        <!-- Right Sidebar Menu -->
+    
 </body>
 </html>

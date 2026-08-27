@@ -415,3 +415,242 @@
     page-break-inside: avoid;
   }
 }
+
+/* ==========================================================================
+   MOBILE BOTTOM APP BAR (Added from Redesign)
+   ========================================================================== */
+@media (max-width: 768px) {
+  /* Hide old mobile nav elements */
+  .mobile-toggle,
+  .nav-menu-wrapper {
+    display: none !important;
+  }
+  
+  /* Ensure navbar is just for the logo */
+  .navbar {
+    border-radius: 0 0 var(--radius-md) var(--radius-md) !important;
+    padding-bottom: 5px;
+  }
+  
+  .navbar .nav-brand {
+    margin: 0 auto;
+  }
+
+  /* Bottom App Bar Container */
+  .mobile-bottom-nav {
+    display: flex !important;
+    position: fixed;
+    bottom: 15px;
+    left: 15px;
+    right: 15px;
+    background: var(--white);
+    border-radius: 40px;
+    box-shadow: 0 5px 25px rgba(0,0,0,0.1);
+    z-index: 1000;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+  }
+
+  /* Bottom Nav Items */
+  .bottom-nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: var(--gray);
+    text-decoration: none;
+    font-size: 0.7rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    flex: 1;
+    position: relative;
+  }
+
+  .bottom-nav-item svg {
+    margin-bottom: 4px;
+    color: var(--gray);
+    transition: all 0.3s ease;
+  }
+
+  .bottom-nav-item.active,
+  .bottom-nav-item:hover {
+    color: var(--primary);
+  }
+
+  .bottom-nav-item.active svg,
+  .bottom-nav-item:hover svg {
+    color: var(--primary);
+  }
+
+  /* Center FAB Button (Daftar) */
+  .bottom-nav-center {
+    position: relative;
+    top: -25px;
+    background: var(--primary);
+    color: var(--white) !important;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 5px 15px rgba(45, 95, 63, 0.3);
+    border: 4px solid var(--off-white);
+  }
+
+  .bottom-nav-center svg {
+    color: var(--white) !important;
+    margin-bottom: 2px;
+  }
+  
+  .bottom-nav-center span {
+    font-size: 0.65rem;
+  }
+
+  .bottom-nav-center:hover {
+    background: var(--primary-dark);
+    transform: translateY(-2px);
+  }
+
+  /* Submenu Popup for Profil */
+  .bottom-dropdown-menu {
+    position: absolute;
+    bottom: calc(100% + 15px);
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: var(--white);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-lg);
+    padding: 10px;
+    min-width: 180px;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    pointer-events: none;
+  }
+
+  .bottom-dropdown-menu::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-width: 8px 8px 0;
+    border-style: solid;
+    border-color: var(--white) transparent transparent transparent;
+  }
+
+  .bottom-dropdown.active .bottom-dropdown-menu {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(0);
+    pointer-events: auto;
+  }
+
+  .bottom-dropdown-menu a {
+    display: block;
+    padding: 10px 15px;
+    color: var(--dark-gray);
+    font-size: 0.9rem;
+    font-weight: 500;
+    border-radius: 8px;
+    margin-bottom: 2px;
+  }
+
+  .bottom-dropdown-menu a:hover {
+    background: rgba(45, 95, 63, 0.05);
+    color: var(--primary);
+  }
+}
+
+/* Mobile Top Bar Redesign */
+@media (max-width: 768px) {
+  /* Hide desktop brand text */
+  .nav-brand {
+    display: none !important;
+  }
+
+  /* Make navbar a floating pill on mobile */
+  .navbar {
+    background: rgba(255, 255, 255, 0.9) !important;
+    backdrop-filter: blur(10px) !important;
+    padding: 8px 15px !important;
+    top: 12px !important;
+    left: 15px !important;
+    right: 15px !important;
+    width: calc(100% - 30px) !important;
+    max-width: calc(100% - 30px) !important;
+    border-radius: 30px !important;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08) !important;
+    transform: none !important;
+  }
+  
+  .navbar .container {
+    padding: 0 15px !important;
+  }
+
+  .mobile-top-bar {
+    display: flex !important;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    gap: 10px;
+  }
+
+  
+
+  .mobile-search-container {
+    flex: 1;
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+
+  .mobile-search-input {
+    width: 100%;
+    padding: 8px 15px 8px 35px;
+    border-radius: 20px;
+    border: 1px solid rgba(0,0,0,0.1);
+    background: rgba(0,0,0,0.03);
+    font-size: 0.85rem;
+    color: var(--dark-gray);
+    outline: none;
+  }
+
+  .mobile-search-input:focus {
+    border-color: var(--primary);
+    background: var(--white);
+  }
+
+  .mobile-search-icon {
+    position: absolute;
+    left: 10px;
+    color: var(--gray);
+  }
+
+  .mobile-top-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .icon-btn {
+    background: none;
+    border: none;
+    padding: 5px;
+    color: var(--gray);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  }
+
+  .icon-btn:hover {
+    color: var(--primary);
+  }
+
+  .mobile-hamburger {
+    margin-left: -5px;
+  }
+}

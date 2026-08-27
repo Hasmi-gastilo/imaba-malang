@@ -44,10 +44,33 @@ function initNavigation() {
     const toggle = dropdown.querySelector('.dropdown-toggle');
     if (toggle) {
       toggle.addEventListener('click', function(e) {
-        if (window.innerWidth <= 768) {
+        if (window.innerWidth <= 992) {
           e.preventDefault();
           dropdown.classList.toggle('active');
         }
+      });
+    }
+  });
+
+  
+  // Bottom Nav Dropdown Toggle
+  const bottomDropdowns = document.querySelectorAll('.bottom-dropdown');
+  bottomDropdowns.forEach(dropdown => {
+    dropdown.addEventListener('click', function(e) {
+      e.preventDefault();
+      // Close others
+      bottomDropdowns.forEach(other => {
+        if (other !== dropdown) other.classList.remove('active');
+      });
+      this.classList.toggle('active');
+    });
+  });
+
+  // Close bottom dropdown when clicking outside
+  document.addEventListener('click', function(e) {
+    if (!e.target.closest('.bottom-dropdown')) {
+      bottomDropdowns.forEach(dropdown => {
+        dropdown.classList.remove('active');
       });
     }
   });
@@ -62,8 +85,10 @@ function initNavigation() {
 function updateAuthButtons() {
   const navMenu = document.querySelector('.nav-menu');
   if (!navMenu) return;
+  if (typeof isAuthenticated !== 'function' || typeof getCurrentUser !== 'function') return;
 
-  const isLoggedIn = isAuthenticated();
+  try {
+    const isLoggedIn = isAuthenticated();
   const user = getCurrentUser();
 
   // Find or create auth button container
@@ -89,6 +114,9 @@ function updateAuthButtons() {
       </ul>
     `;
     navMenu.appendChild(userMenu);
+  }
+  } catch(e) {
+    console.log('Auth not ready yet');
   }
 }
 
@@ -120,7 +148,39 @@ function initSearch() {
       
       if (keyword === '') {
         showToast('Silakan masukkan nama anggota yang dicari', 'error');
+      }
+  
+  // Navbar Expanding Search Logic
+  const navSearchBtn = document.getElementById('navSearchBtn');
+  const navSearchContainer = document.getElementById('navSearchForm');
+  const navSearchInput = document.getElementById('navSearchInput');
+  
+  if (navSearchBtn && navSearchContainer && navSearchInput) {
+    navSearchBtn.addEventListener('click', function(e) {
+      if (!navSearchContainer.classList.contains('active')) {
+        // Expand search
+        e.preventDefault();
+        navSearchContainer.classList.add('active');
+        navSearchInput.focus();
       } else {
+        // If already active, check if input is empty
+        if (navSearchInput.value.trim() === '') {
+          e.preventDefault();
+          navSearchContainer.classList.remove('active');
+        }
+        // If not empty, let it submit normally
+      }
+    });
+
+    // Close when clicking outside
+    document.addEventListener('click', function(e) {
+      if (navSearchContainer.classList.contains('active') && !navSearchContainer.contains(e.target)) {
+        if (navSearchInput.value.trim() === '') {
+          navSearchContainer.classList.remove('active');
+        }
+      }
+    });
+  } else {
         window.location.href = `pencarian.html?q=${encodeURIComponent(keyword)}`;
       }
     });

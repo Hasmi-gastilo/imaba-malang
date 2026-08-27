@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pendaftaran Anggota - DPW IMABA MALANG</title>
-    <link rel="stylesheet" href="css/style.css?v=1787786928.91856">
-    <link rel="stylesheet" href="css/responsive.css?v=1787786919.79736">
+    <link rel="stylesheet" href="css/style.css?v=1787853203">
+    <link rel="stylesheet" href="css/responsive.css?v=1787853203">
     <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
@@ -22,7 +22,7 @@
         }
 
         .registration-card {
-            background: var(--white);
+            background: var(--bg-card);
             border-radius: var(--radius-xl);
             box-shadow: var(--shadow-lg);
             padding: var(--spacing-xxl);
@@ -136,7 +136,7 @@
         .photo-preview img {
             max-width: 200px;
             border-radius: var(--radius-md);
-            box-shadow: var(--shadow-md);
+            
         }
 
         .form-actions {
@@ -210,11 +210,32 @@
     </style>
 </head>
 <body>
+    <!-- CSS-only Toggles (No JS needed) -->
+    <input type="checkbox" id="dark-mode-toggle" style="display: none;">
     <!-- Navigation -->
-    <nav class="navbar scrolled" id="navbar" style="background-color: var(--white); box-shadow: var(--shadow-sm);">
+    <nav class="navbar scrolled" id="navbar" style="background-color: var(--bg-card); box-shadow: var(--shadow-sm);">
         <div class="container navbar-container">
+            <!-- Mobile Top Bar (replaces brand on mobile) -->
+            <div class="mobile-top-bar">
+                <a href="index.html" class="mobile-logo">
+                    <img src="img/logo-imaba.png" alt="Logo IMABA Malang" style="height: 40px; width: auto; object-fit: contain;">
+                </a>
+                <form action="pencarian.html" method="GET" class="mobile-search-container" style="flex:1; position:relative; display:flex; align-items:center;">
+                    <input type="text" name="q" id="mobileSearchInput" placeholder="Search..." class="mobile-search-input">
+                    <button type="submit" style="background:none; border:none; padding:0; position:absolute; left:10px; display:flex; align-items:center;">
+                        <svg class="mobile-search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line style="position:static;"></svg>
+                    </button>
+                </form>
+                <div class="mobile-top-actions">
+                    <label for="dark-mode-toggle" class="icon-btn" id="mobileDarkModeBtn" aria-label="Dark Mode" style="cursor: pointer; display:flex;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg></label>
+                    <a href="login.html" class="icon-btn" id="mobileUserBtn" aria-label="User Profile" style="cursor: pointer; display:flex;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg></a>
+                    <label for="sidebar-toggle" class="icon-btn mobile-hamburger" id="mobileSidebarBtn" aria-label="Menu" style="cursor: pointer; display:flex;"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></label>
+                </div>
+            </div>
+
             <div class="nav-brand">
                 <a href="index.html" class="brand-text">
+                    <img src="img/logo-imaba.png" alt="Logo IMABA" style="height: 40px; width: auto; object-fit: contain;">
                     <h3>IMABA<span>Malang</span></h3>
                 </a>
             </div>
@@ -242,9 +263,12 @@
                     <li><a href="program.html">Program</a></li>
                 </ul>
                 <div class="nav-actions">
-                    <a href="#" class="nav-search-icon" aria-label="Search">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-                    </a>
+                                        <form action="pencarian.html" method="GET" class="nav-search-container" id="navSearchForm">
+                        <input type="text" name="q" class="nav-search-input" placeholder="Cari..." id="navSearchInput">
+                        <button type="button" class="nav-search-icon" aria-label="Search" id="navSearchBtn">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                        </button>
+                    </form>
                     <a href="daftar.html" class="btn btn-daftar active">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
                         Daftar
@@ -402,7 +426,7 @@
         </div>
     </div>
 
-    <script type="module" src="js/api.js?v=1787750187.86751"></script>
+    <script type="module" src="js/api.js?v=1787853203"></script>
     <script>
         const form = document.getElementById('registrationForm');
         const photoInput = document.getElementById('photoInput');
@@ -506,5 +530,9 @@
             }
         });
     </script>
+    
+
+        <!-- Right Sidebar Menu -->
+    
 </body>
 </html>

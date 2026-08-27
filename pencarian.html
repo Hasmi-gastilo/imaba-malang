@@ -6,15 +6,37 @@
     <meta name="description" content="DPW IMABA Malang - Ikatan Mahasiswa Bata-Bata Wilayah Malang. Organisasi mahasiswa yang berakar pada nilai-nilai Islami dan kearifan lokal.">
     <meta name="keywords" content="IMABA, Bata-Bata, Malang, Mahasiswa, Organisasi, Islam">
     <title>Pencarian Global - DPW IMABA MALANG</title>
-    <link rel="stylesheet" href="css/style.css?v=1787786928.91856">
-    <link rel="stylesheet" href="css/responsive.css?v=1787786919.79736">
+    <link rel="stylesheet" href="css/style.css?v=1787853203">
+    <link rel="stylesheet" href="css/responsive.css?v=1787853203">
 </head>
 <body>
+    <!-- CSS-only Toggles (No JS needed) -->
+    <input type="checkbox" id="dark-mode-toggle" style="display: none;">
+    <input type="checkbox" id="sidebar-toggle" style="display: none;">
     <!-- Navigation -->
     <nav class="navbar" id="navbar">
         <div class="container navbar-container">
+            <!-- Mobile Top Bar (replaces brand on mobile) -->
+            <div class="mobile-top-bar">
+                <a href="index.html" class="mobile-logo">
+                    <img src="img/logo-imaba.png" alt="Logo IMABA Malang" style="height: 40px; width: auto; object-fit: contain;">
+                </a>
+                <form action="pencarian.html" method="GET" class="mobile-search-container" style="flex:1; position:relative; display:flex; align-items:center;">
+                    <input type="text" name="q" id="mobileSearchInput" placeholder="Search..." class="mobile-search-input">
+                    <button type="submit" style="background:none; border:none; padding:0; position:absolute; left:10px; display:flex; align-items:center;">
+                        <svg class="mobile-search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line style="position:static;"></svg>
+                    </button>
+                </form>
+                <div class="mobile-top-actions">
+                    <label for="dark-mode-toggle" class="icon-btn" id="mobileDarkModeBtn" aria-label="Dark Mode" style="cursor: pointer; display:flex;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg></label>
+                    <a href="login.html" class="icon-btn" id="mobileUserBtn" aria-label="User Profile" style="cursor: pointer; display:flex;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg></a>
+                    <label for="sidebar-toggle" class="icon-btn mobile-hamburger" id="mobileSidebarBtn" aria-label="Menu" style="cursor: pointer; display:flex;"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></label>
+                </div>
+            </div>
+
             <div class="nav-brand">
                 <a href="index.html" class="brand-text">
+                    <img src="img/logo-imaba.png" alt="Logo IMABA" style="height: 40px; width: auto; object-fit: contain;">
                     <h3>IMABA<span>Malang</span></h3>
                 </a>
             </div>
@@ -42,9 +64,12 @@
                     <li><a href="program.html">Program</a></li>
                 </ul>
                 <div class="nav-actions">
-                    <a href="#" class="nav-search-icon" aria-label="Search">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-                    </a>
+                                        <form action="pencarian.html" method="GET" class="nav-search-container" id="navSearchForm">
+                        <input type="text" name="q" class="nav-search-input" placeholder="Cari..." id="navSearchInput">
+                        <button type="button" class="nav-search-icon" aria-label="Search" id="navSearchBtn">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                        </button>
+                    </form>
                     <a href="daftar.html" class="btn btn-daftar">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
                         Daftar
@@ -183,7 +208,120 @@
         </div>
     </footer>
 
-    <script src="js/main.js"></script>
-    <script type="module" src="js/api.js?v=1787750187.86751"></script>
+    <script src="js/main.js?v=1787853203"></script>
+    <script type="module" src="js/api.js?v=1787853203"></script>
+    <!-- Mobile Bottom Navigation (Visible only on mobile) -->
+    <nav class="mobile-bottom-nav">
+        <a href="index.html" class="bottom-nav-item active">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+            <span>Home</span>
+        </a>
+        
+        <div class="bottom-nav-item bottom-dropdown">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+            <span>Profil</span>
+            <div class="bottom-dropdown-menu">
+                <a href="profil.html">Tentang Kami</a>
+                <a href="sejarah.html">Sejarah</a>
+                <a href="kepengurusan.html">Kepengurusan</a>
+                <a href="mars-hymne.html">Mars & Hymne</a>
+            </div>
+        </div>
+
+        <a href="daftar.html" class="bottom-nav-center">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+            <span>DAFTAR</span>
+        </a>
+
+        <a href="berita.html" class="bottom-nav-item">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"></path><path d="M18 14h-8"></path><path d="M15 18h-5"></path><path d="M10 6h8v4h-8V6Z"></path></svg>
+            <span>Berita</span>
+        </a>
+
+        <a href="agenda.html" class="bottom-nav-item">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+            <span>Agenda</span>
+        </a>
+    </nav>
+
+        <!-- Right Sidebar Menu -->
+    <label for="sidebar-toggle" class="sidebar-overlay" id="sidebarOverlay"></label>
+    <aside class="right-sidebar" id="rightSidebar">
+        <!-- Watermark Background -->
+        <div class="sidebar-watermark">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="0.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+        </div>
+
+        <div class="sidebar-header">
+            <div class="sidebar-brand">
+                <img src="img/logo-imaba.png" alt="Logo">
+                <span>IMABA<br><small>Malang</small></span>
+            </div>
+            <label for="sidebar-toggle" class="close-sidebar" id="closeSidebarBtn">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            </label>
+        </div>
+
+        <div class="sidebar-content">
+            <div class="sidebar-menu-grid">
+                
+                <a href="index.html" class="sidebar-menu-card">
+                    <div class="smc-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg></div>
+                    <div class="smc-text">
+                        <h4>HOME</h4>
+                        <p>Halaman utama website</p>
+                    </div>
+                </a>
+
+                <a href="profil.html" class="sidebar-menu-card">
+                    <div class="smc-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg></div>
+                    <div class="smc-text">
+                        <h4>PROFIL & TENTANG</h4>
+                        <p>Tentang IMABA Malang</p>
+                    </div>
+                </a>
+
+                <a href="berita.html" class="sidebar-menu-card">
+                    <div class="smc-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"></path><path d="M18 14h-8"></path><path d="M15 18h-5"></path><path d="M10 6h8v4h-8V6Z"></path></svg></div>
+                    <div class="smc-text">
+                        <h4>BERITA</h4>
+                        <p>Informasi dan kabar terbaru</p>
+                    </div>
+                </a>
+
+                <a href="agenda.html" class="sidebar-menu-card">
+                    <div class="smc-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg></div>
+                    <div class="smc-text">
+                        <h4>AGENDA</h4>
+                        <p>Jadwal acara mendatang</p>
+                    </div>
+                </a>
+
+                <a href="program.html" class="sidebar-menu-card">
+                    <div class="smc-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg></div>
+                    <div class="smc-text">
+                        <h4>PROGRAM KERJA</h4>
+                        <p>Kegiatan unggulan kami</p>
+                    </div>
+                </a>
+
+                <a href="mars-hymne.html" class="sidebar-menu-card">
+                    <div class="smc-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="18" cy="16" r="3"></circle></svg></div>
+                    <div class="smc-text">
+                        <h4>MARS & HYMNE</h4>
+                        <p>Lagu kebanggaan anggota</p>
+                    </div>
+                </a>
+
+            </div>
+        </div>
+
+        <div class="sidebar-footer">
+            <a href="login.html" class="sidebar-cta-btn">
+                <span>LOGIN / DAFTAR</span>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path><polyline points="10 17 15 12 10 7"></polyline><line x1="15" y1="12" x2="3" y2="12"></line></svg>
+            </a>
+        </div>
+    </aside>
 </body>
 </html>

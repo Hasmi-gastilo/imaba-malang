@@ -5,6 +5,32 @@
 
 // Check admin auth on page load
 document.addEventListener('DOMContentLoaded', function() {
+  // --- MOBILE RESPONSIVENESS INJECTION ---
+  const topbar = document.querySelector('.topbar');
+  const sidebar = document.querySelector('.sidebar');
+  if (topbar && sidebar) {
+    // 1. Create hamburger button
+    const menuBtn = document.createElement('button');
+    menuBtn.className = 'mobile-menu-btn';
+    menuBtn.innerHTML = '<svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>';
+    topbar.insertBefore(menuBtn, topbar.firstChild);
+    
+    // 2. Create overlay
+    const overlay = document.createElement('div');
+    overlay.className = 'admin-overlay';
+    document.body.appendChild(overlay);
+    
+    // 3. Toggle logic
+    menuBtn.addEventListener('click', function() {
+      sidebar.classList.add('show-sidebar');
+      overlay.classList.add('show');
+    });
+    
+    overlay.addEventListener('click', function() {
+      sidebar.classList.remove('show-sidebar');
+      overlay.classList.remove('show');
+    });
+  }
   // Fix paths for admin pages (they're in /admin/ subdirectory)
   fixAdminPaths();
 
