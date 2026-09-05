@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pendaftaran Anggota - DPW IMABA MALANG</title>
-    <link rel="stylesheet" href="css/style.css?v=1787853203">
-    <link rel="stylesheet" href="css/responsive.css?v=1787853203">
+    <link rel="stylesheet" href="css/style.css?v=1788631228">
+    <link rel="stylesheet" href="css/responsive.css?v=1788631228">
     <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
@@ -435,7 +435,8 @@
         </div>
     </div>
 
-    <script type="module" src="js/api.js?v=1788630548"></script>
+
+    <script type="module" src="js/api.js?v=1788631228"></script>
     <script>
         const form = document.getElementById('registrationForm');
         const photoInput = document.getElementById('photoInput');
@@ -453,7 +454,6 @@
                     alert('Ukuran file terlalu besar. Maksimal 5MB');
                     return;
                 }
-
                 const reader = new FileReader();
                 reader.onload = function(e) {
                     photoImg.src = e.target.result;
@@ -468,41 +468,44 @@
         form.addEventListener('submit', async function(e) {
             e.preventDefault();
 
-            // Validate photo
             if (!selectedPhoto) {
                 alert('Foto harus diupload');
                 return;
             }
 
-            // Disable submit button
             submitBtn.disabled = true;
             submitBtn.textContent = 'Mengirim...';
 
             try {
-                // Create FormData
+                // Wait for api to be available (module scripts load async)
+                let retries = 0;
+                while (!window.api && retries < 50) {
+                    await new Promise(r => setTimeout(r, 100));
+                    retries++;
+                }
+
+                if (!window.api) {
+                    throw new Error('Sistem sedang memuat, silakan coba lagi dalam beberapa detik.');
+                }
+
                 const formData = new FormData();
-                
-                // Add all form fields
                 const formElements = form.elements;
                 for (let element of formElements) {
                     if (element.name && element.type !== 'file') {
                         formData.append(element.name, element.value);
                     }
                 }
-
-                // Add photo
                 formData.append('photo', selectedPhoto);
 
-                // Submit application
-                const response = await api.createApplication(formData);
+                const response = await window.api.createApplication(formData);
 
                 if (response.success) {
                     Swal.fire({
                         title: 'Pendaftaran Berhasil!',
-                        text: 'Data Anda telah dikirim dan akan diverifikasi oleh admin dalam 1-3 hari kerja. Anda akan dihubungi melalui WhatsApp atau email yang terdaftar.',
+                        text: 'Data Anda telah dikirim dan akan diverifikasi oleh admin dalam 1-3 hari kerja.',
                         icon: 'success',
                         confirmButtonText: 'Kembali ke Beranda',
-                        confirmButtonColor: 'var(--primary)'
+                        confirmButtonColor: '#2d5f3f'
                     }).then(() => {
                         window.location.href = '/';
                     });
@@ -511,7 +514,7 @@
                         title: 'Pendaftaran Gagal',
                         text: response.message,
                         icon: 'error',
-                        confirmButtonColor: 'var(--primary)'
+                        confirmButtonColor: '#2d5f3f'
                     });
                     submitBtn.disabled = false;
                     submitBtn.textContent = 'Kirim Pendaftaran';
@@ -522,7 +525,7 @@
                     title: 'Terjadi Kesalahan',
                     text: error.message,
                     icon: 'error',
-                    confirmButtonColor: 'var(--primary)'
+                    confirmButtonColor: '#2d5f3f'
                 });
                 submitBtn.disabled = false;
                 submitBtn.textContent = 'Kirim Pendaftaran';
@@ -539,9 +542,6 @@
             }
         });
     </script>
-    
 
-        <!-- Right Sidebar Menu -->
-    
 </body>
 </html>

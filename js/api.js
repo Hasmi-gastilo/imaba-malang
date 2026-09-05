@@ -442,6 +442,43 @@ class API {
     }
   }
 
+  // === PENDAFTARAN / APPLICATIONS ===
+  async createApplication(formData) {
+    try {
+      // Convert FormData to a plain object for Firestore
+      const data = {};
+      for (const [key, value] of formData.entries()) {
+        if (key !== 'photo') {
+          data[key] = value;
+        }
+      }
+
+      // Handle photo upload if present
+      const photoFile = formData.get('photo');
+      if (photoFile && photoFile instanceof File) {
+        try {
+          const photoUrl = await this.uploadImage(photoFile, 'pendaftaran');
+          data.photoUrl = photoUrl;
+        } catch (uploadErr) {
+          console.warn("Photo upload failed, continuing without photo:", uploadErr);
+          data.photoUrl = '';
+        }
+      }
+
+      // Add metadata
+      data.status = 'pending';
+      data.createdAt = new Date().toISOString();
+
+      // Save to Firestore
+      const docRef = await addDoc(collection(db, 'applications'), data);
+      
+      return { success: true, message: "Pendaftaran berhasil dikirim.", id: docRef.id };
+    } catch (error) {
+      console.error("Create application error:", error);
+      return { success: false, message: error.message || "Gagal mengirim pendaftaran." };
+    }
+  }
+
 }
 
 // Create a global API instance and expose it
