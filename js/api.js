@@ -19,7 +19,7 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 import { 
   ref, 
-  uploadBytes, 
+  uploadBytesResumable, 
   getDownloadURL 
 } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-storage.js";
 import { storage } from './firebase-init.js?v=1787750196.13692';
@@ -427,19 +427,45 @@ class API {
   // ===================================
 
   async uploadImage(file, path = 'uploads') {
-    try {
-      const extension = file.name.split('.').pop();
-      const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${extension}`;
-      const storageRef = ref(storage, `${path}/${fileName}`);
-      
-      const snapshot = await uploadBytes(storageRef, file);
-      const downloadURL = await getDownloadURL(snapshot.ref);
-      
-      return { success: true, url: downloadURL };
-    } catch (error) {
-      console.error("Error uploading image:", error);
-      throw error;
-    }
+    return new Promise((resolve, reject) => {
+      try {
+        const extension = file.name.split('.').pop();
+        const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${extension}`;
+        const storageRef = ref(storage, `${path}/${fileName}`);
+        
+        // Use resumable upload so we can cancel it if it hangs
+        const uploadTask = uploadBytesResumable(storageRef, file);
+        
+        // 5 seconds timeout to prevent infinite CORS retries locally
+        const timeoutId = setTimeout(() => {
+          uploadTask.cancel();
+          reject(new Error("Upload timeout. Check Firebase Storage CORS rules."));
+        }, 5000);
+
+        uploadTask.on('state_changed', 
+          (snapshot) => {
+            // progress
+          }, 
+          (error) => {
+            clearTimeout(timeoutId);
+            console.error("Error uploading image:", error);
+            reject(error);
+          }, 
+          async () => {
+            clearTimeout(timeoutId);
+            try {
+              const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+              resolve({ success: true, url: downloadURL });
+            } catch (err) {
+              reject(err);
+            }
+          }
+        );
+      } catch (error) {
+        console.error("Error starting upload:", error);
+        reject(error);
+      }
+    });
   }
 
   // === PENDAFTARAN / APPLICATIONS ===
