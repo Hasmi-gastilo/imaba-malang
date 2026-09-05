@@ -16,7 +16,7 @@
         }
 
         .registration-container {
-            max-width: 800px;
+            max-width: 600px;
             margin: 0 auto;
             padding: 0 var(--spacing-md);
         }
@@ -25,17 +25,17 @@
             background: var(--bg-card);
             border-radius: var(--radius-xl);
             box-shadow: var(--shadow-lg);
-            padding: var(--spacing-xxl);
+            padding: var(--spacing-lg);
         }
 
         .registration-header {
             text-align: center;
-            margin-bottom: var(--spacing-xl);
+            margin-bottom: var(--spacing-md);
         }
 
         .registration-header h1 {
             color: var(--primary);
-            font-size: 2rem;
+            font-size: 1.5rem;
             margin-bottom: var(--spacing-sm);
             font-weight: 700;
         }
@@ -46,8 +46,8 @@
         }
 
         .form-section {
-            margin-bottom: var(--spacing-xl);
-            padding-bottom: var(--spacing-xl);
+            margin-bottom: var(--spacing-md);
+            padding-bottom: var(--spacing-md);
             border-bottom: 2px solid var(--light-gray);
         }
 
@@ -57,7 +57,7 @@
 
         .form-section h3 {
             color: var(--primary);
-            font-size: 1.3rem;
+            font-size: 1.15rem;
             margin-bottom: var(--spacing-md);
             font-weight: 600;
         }
@@ -65,7 +65,7 @@
         .form-row {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: var(--spacing-md);
+            gap: var(--spacing-sm);
             margin-bottom: var(--spacing-md);
         }
 
@@ -89,7 +89,7 @@
         .form-group input,
         .form-group select,
         .form-group textarea {
-            padding: var(--spacing-sm) var(--spacing-md);
+            padding: 8px 12px;
             border: 2px solid var(--light-gray);
             border-radius: var(--radius-md);
             font-size: 1rem;
@@ -141,7 +141,7 @@
 
         .form-actions {
             display: flex;
-            gap: var(--spacing-md);
+            gap: var(--spacing-sm);
             justify-content: flex-end;
             margin-top: var(--spacing-xl);
         }
@@ -191,7 +191,7 @@
             color: var(--white);
             padding: var(--spacing-lg);
             border-radius: var(--radius-md);
-            margin-bottom: var(--spacing-xl);
+            margin-bottom: var(--spacing-md);
         }
 
         .info-box h4 {
@@ -206,6 +206,15 @@
 
         .info-box li {
             margin-bottom: var(--spacing-xs);
+        }
+
+        @media (max-width: 768px) {
+            .registration-card {
+                padding: var(--spacing-md);
+            }
+            .registration-page {
+                padding: 100px 0 var(--spacing-lg);
+            }
         }
     </style>
 </head>
