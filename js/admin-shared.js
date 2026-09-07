@@ -51,10 +51,26 @@ document.addEventListener('DOMContentLoaded', function() {
   // Logout button
   const logoutBtn = document.getElementById('logoutBtn');
   if (logoutBtn) {
-    logoutBtn.addEventListener('click', function(e) {
+    logoutBtn.addEventListener('click', async function(e) {
       e.preventDefault();
-      if (confirm('Yakin ingin logout?')) {
-        logout();
+      if (typeof Swal !== 'undefined') {
+        const result = await Swal.fire({
+          title: 'Konfirmasi Logout',
+          text: 'Yakin ingin keluar dari panel admin?',
+          icon: 'question',
+          showCancelButton: true,
+          confirmButtonColor: '#dc3545',
+          cancelButtonColor: '#6c757d',
+          confirmButtonText: 'Ya, logout',
+          cancelButtonText: 'Batal'
+        });
+        if (result.isConfirmed) {
+          logout();
+        }
+      } else {
+        if (confirm('Yakin ingin logout?')) {
+          logout();
+        }
       }
     });
   }
@@ -122,8 +138,21 @@ function toInputDate(dateStr) {
 }
 
 // Confirm delete
-function confirmDelete(name) {
-  return confirm(`Yakin ingin menghapus "${name}"? Tindakan ini tidak dapat dibatalkan.`);
+async function confirmDelete(name) {
+  if (typeof Swal === 'undefined') {
+    return confirm(`Yakin ingin menghapus "${name}"? Tindakan ini tidak dapat dibatalkan.`);
+  }
+  const result = await Swal.fire({
+    title: 'Konfirmasi Hapus',
+    text: `Yakin ingin menghapus "${name}"? Tindakan ini tidak dapat dibatalkan.`,
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#dc3545',
+    cancelButtonColor: '#6c757d',
+    confirmButtonText: 'Ya, hapus!',
+    cancelButtonText: 'Batal'
+  });
+  return result.isConfirmed;
 }
 
 // Show/hide modal

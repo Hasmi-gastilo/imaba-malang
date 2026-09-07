@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="id">
 <head>
   <meta charset="UTF-8">
@@ -6,6 +6,7 @@
   <title>Verifikasi Pendaftaran - Admin IMABA</title>
   <link rel="stylesheet" href="../css/admin-common.css">
   
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body>
 
@@ -19,6 +20,7 @@
     <li><a href="anggota.html" class=""><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> Anggota</a></li>
     <li><a href="pendaftaran.html" class="active"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg> Pendaftaran</a></li>
     <li><a href="pengurus.html" class=""><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> Kepengurusan</a></li>
+    <li><a href="profil.html" ><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg> Profil & Sejarah</a></li>
     <li><a href="berita.html" class=""><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 32V9a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2z"/><path d="M19 9l5 5v11a2 2 0 0 1-2 2h-3"/></svg> Berita</a></li>
     <li><a href="agenda.html" class=""><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> Agenda</a></li>
     <li><a href="program.html" class=""><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg> Program</a></li>
@@ -50,7 +52,7 @@
 
       <div class="tabs">
         <button class="tab active" onclick="loadApplications('PENDING')">Menunggu Persetujuan</button>
-        <button class="tab" onclick="loadApplications('APPROVED')">Disetujui</button>
+        <button class="tab" onclick="loadApplications('ACTIVE')">Disetujui</button>
         <button class="tab" onclick="loadApplications('REJECTED')">Ditolak</button>
       </div>
 
@@ -61,7 +63,7 @@
   </div>
 </div>
 
-<script type="module" src="../js/api.js?v=1788632054"></script>
+<script type="module" src="../js/api.js?v=1788796436"></script>
 <script src="../js/admin-shared.js"></script>
 <script>
   function checkAuth() {
@@ -107,19 +109,19 @@ checkAuth();
   function createAppCard(app) {
     const div = document.createElement('div');
     div.className = 'application-card';
-    const statusClass = app.status === 'PENDING' ? 'badge-pending' : (app.status === 'APPROVED' ? 'badge-approved' : 'badge-rejected');
+    const statusClass = app.status === 'PENDING' ? 'badge-pending' : (app.status === 'ACTIVE' ? 'badge-approved' : 'badge-rejected');
     
     let actions = '';
     if (app.status === 'PENDING') {
       actions = `
-        <button class="btn btn-primary btn-sm" onclick="approveApp('${app._id}')">Terima</button>
-        <button class="btn btn-danger btn-sm" onclick="rejectApp('${app._id}')">Tolak</button>
+        <button class="btn btn-primary btn-sm" onclick="approveApp('${app.id}')">Terima</button>
+        <button class="btn btn-danger btn-sm" onclick="rejectApp('${app.id}')">Tolak</button>
       `;
     }
 
     div.innerHTML = `
       <div class="application-info">
-        <img src="${app.photo || '../assets/default-avatar.png'}" class="applicant-photo" alt="Photo" onerror="this.src=''">
+        <img src="${app.photoUrl || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(app.fullName || 'User') + '&background=random'}" class="applicant-photo" alt="Photo" onerror="this.src='https://ui-avatars.com/api/?name=' + encodeURIComponent(app.fullName || 'User') + '&background=random'">
         <div class="applicant-details">
           <h3>${app.fullName} <span class="badge ${statusClass}">${app.status}</span></h3>
           <p><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="vertical-align:-2px; margin-right:4px;"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg> ${app.email} &nbsp;|&nbsp; <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="vertical-align:-2px; margin-right:4px;"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg> ${app.whatsapp}</p>
@@ -160,7 +162,28 @@ checkAuth();
     }
   }
 
-  loadApplications('PENDING');
+  function initPage() {
+    if (typeof window.api === "undefined") {
+      setTimeout(initPage, 50);
+      return;
+    }
+    loadApplications('PENDING');
+  }
+  initPage();
 </script>
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+

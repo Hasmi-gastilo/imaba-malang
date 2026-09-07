@@ -1,43 +1,13 @@
-import { auth, db } from './firebase-init.js?v=1787750196.13692';
-import { 
-  signInWithEmailAndPassword, 
-  createUserWithEmailAndPassword, 
-  signOut, 
-  onAuthStateChanged 
-} from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
-import { 
-  collection, 
-  doc, 
-  getDoc, 
-  getDocs, 
-  addDoc, 
-  updateDoc, 
-  deleteDoc, 
-  query, 
-  where,
-  orderBy
-} from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
-import { 
-  ref, 
-  uploadBytesResumable, 
-  getDownloadURL 
-} from "https://www.gstatic.com/firebasejs/10.8.1/firebase-storage.js";
-import { storage } from './firebase-init.js?v=1787750196.13692';
-
-/**
- * API Communication Handler (Firebase Client SDK Version)
- * Centralized API calls for the application
- */
+import { supabase } from './supabase-init.js?v=1788698000';
 
 class API {
   constructor() {
     this.user = null;
     
     // Listen for auth state changes
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        this.user = user;
-        // Optionally fetch role from firestore
+    supabase.auth.onAuthStateChange((event, session) => {
+      if (session && session.user) {
+        this.user = session.user;
       } else {
         this.user = null;
       }
@@ -50,39 +20,38 @@ class API {
 
   async login(email, password) {
     try {
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: email,
+        password: password,
+      });
+
+      if (error) throw error;
+      
+      const user = data.user;
+      
       // Fetch user profile to get role
-      const docRef = doc(db, "users", userCredential.user.uid);
-      const docSnap = await getDoc(docRef);
-      
-      let role = 'MEMBER';
-      let username = userCredential.user.email;
-      
-      if (docSnap.exists()) {
-        role = docSnap.data().role || 'MEMBER';
-        username = docSnap.data().username || docSnap.data().email || 'Admin';
-      } else {
-        // Fallback: Check if they have a legacy user doc with this email
-        const usersCol = collection(db, "users");
-        const q = query(usersCol, where("email", "==", email));
-        const querySnapshot = await getDocs(q);
+      const { data: profileData, error: profileError } = await supabase
+        .from('users')
+        .select('*')
+        .eq('id', user.id)
+        .single();
         
-        if (!querySnapshot.empty) {
-          const legacyDoc = querySnapshot.docs[0];
-          role = legacyDoc.data().role || 'MEMBER';
-          username = legacyDoc.data().username || email;
-          
-          // Optionally, we could migrate the doc to the new UID here, but for safety we just grant the role.
-        } else if (email.includes('admin') || email.includes('imaba')) {
-          // Hard fallback for admin emails if collection is empty
+      let role = 'MEMBER';
+      let username = user.email;
+      
+      if (profileData) {
+        role = profileData.role || 'MEMBER';
+        username = profileData.username || profileData.email || 'Admin';
+      } else {
+        if (email.includes('admin') || email.includes('imaba')) {
           role = 'SUPER_ADMIN';
           username = 'Super Admin';
         }
       }
       
       const userObj = {
-        uid: userCredential.user.uid,
-        email: userCredential.user.email,
+        uid: user.id,
+        email: user.email,
         role: role,
         username: username
       };
@@ -95,241 +64,415 @@ class API {
     }
   }
 
-  async register(userData) {
-    // Note: Creating a user via client SDK automatically signs them in.
-    // If you need admin to create users without signing in, you need Cloud Functions.
-    // For now, assuming basic user registration.
+  async logout() {
     try {
-      const userCredential = await createUserWithEmailAndPassword(auth, userData.email, userData.password);
-      
-      // Save extra data to Firestore
-      await updateDoc(doc(db, "users", userCredential.user.uid), {
-        name: userData.name,
-        role: 'MEMBER',
-        createdAt: new Date().toISOString()
-      });
-      
-      return { success: true, message: "User registered successfully" };
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+      localStorage.removeItem('user');
+      return { success: true };
     } catch (error) {
-      console.error("Register error:", error);
-      throw new Error(error.message);
+      console.error("Logout error:", error);
+      return { success: false, message: error.message };
     }
   }
 
-  async getProfile() {
-    const user = auth.currentUser;
-    if (!user) throw new Error("Not authenticated");
+  getCurrentUser() {
+    const userStr = localStorage.getItem('user');
+    return userStr ? JSON.parse(userStr) : null;
+  }
+
+  isAuthenticated() {
+    return this.getCurrentUser() !== null;
+  }
+
+  hasRole(requiredRoles) {
+    const user = this.getCurrentUser();
+    if (!user) return false;
     
-    const docRef = doc(db, "users", user.uid);
-    const docSnap = await getDoc(docRef);
-    
-    if (docSnap.exists()) {
-      return { success: true, data: docSnap.data() };
-    } else {
-      return { success: true, data: { email: user.email } };
+    if (typeof requiredRoles === 'string') {
+      return user.role === requiredRoles;
     }
+    
+    return requiredRoles.includes(user.role);
   }
 
   // ===================================
   // HOMEPAGE APIs
   // ===================================
-
+  
   async getHomepageData() {
     try {
-      const docRef = doc(db, "settings", "homepage");
-      const docSnap = await getDoc(docRef);
-      if (docSnap.exists()) {
-        return { success: true, data: docSnap.data() };
-      }
-      return { success: true, data: {} };
+      const { data, error } = await supabase
+        .from('homepage_data')
+        .select('*')
+        .eq('id', 'main')
+        .single();
+        
+      if (error && error.code !== 'PGRST116') throw error;
+      
+      return { success: true, data: data || {} };
     } catch (error) {
-      console.error("Error fetching homepage:", error);
-      throw error;
+      console.error("Error fetching homepage data:", error);
+      return { success: true, data: {} };
     }
   }
 
   async updateHomepageData(data) {
     try {
-      const docRef = doc(db, "settings", "homepage");
-      await updateDoc(docRef, data);
-      return { success: true, message: "Homepage updated" };
+      const { error } = await supabase
+        .from('homepage_data')
+        .upsert({ id: 'main', ...data, updated_at: new Date().toISOString() });
+        
+      if (error) throw error;
+      return { success: true };
     } catch (error) {
-      console.error("Error updating homepage:", error);
-      throw error;
+      console.error("Error updating homepage data:", error);
+      return { success: false, message: error.message };
     }
   }
 
   // ===================================
-  // NEWS APIs
+  // BERITA / NEWS APIs
   // ===================================
+
+  _mapNewsFromDB(dbRow) {
+    if (!dbRow) return null;
+    return {
+      _id: dbRow.id,
+      id: dbRow.id,
+      title: dbRow.title,
+      category: dbRow.category,
+      isPublished: dbRow.is_published,
+      publishedAt: dbRow.published_at,
+      thumbnail: dbRow.thumbnail,
+      excerpt: dbRow.excerpt,
+      content: dbRow.content,
+      tags: dbRow.tags ? (typeof dbRow.tags === 'string' ? dbRow.tags.split(',').map(s=>s.trim()) : dbRow.tags) : [],
+      createdAt: dbRow.created_at,
+    };
+  }
+
+  _mapNewsToDB(payload) {
+    const dbPayload = {};
+    if (payload.title !== undefined) dbPayload.title = payload.title;
+    if (payload.category !== undefined) dbPayload.category = payload.category;
+    if (payload.thumbnail !== undefined) dbPayload.thumbnail = payload.thumbnail;
+    if (payload.excerpt !== undefined) dbPayload.excerpt = payload.excerpt;
+    if (payload.content !== undefined) dbPayload.content = payload.content;
+    
+    if (payload.isPublished !== undefined) {
+      dbPayload.is_published = payload.isPublished;
+      if (payload.isPublished) {
+        dbPayload.published_at = new Date().toISOString();
+      } else {
+        dbPayload.published_at = null;
+      }
+    }
+    if (payload.tags !== undefined) {
+      dbPayload.tags = Array.isArray(payload.tags) ? payload.tags.join(', ') : payload.tags;
+    }
+    return dbPayload;
+  }
 
   async getAllNews(params = {}) {
     try {
-      const newsCol = collection(db, "news");
-      let q = query(newsCol, orderBy("createdAt", "desc"));
+      let query = supabase.from('news').select('*').order('created_at', { ascending: false });
       
-      const querySnapshot = await getDocs(q);
-      const newsList = querySnapshot.docs.map(doc => ({ _id: doc.id, id: doc.id, ...doc.data() }));
-      return { success: true, data: newsList };
+      if (params.limit) {
+        query = query.limit(params.limit);
+      }
+      
+      const { data, error } = await query;
+      if (error) throw error;
+      
+      return { success: true, data: data.map(this._mapNewsFromDB) };
     } catch (error) {
-      console.error("Error fetching news:", error);
-      throw error;
+      console.error("Get all news error:", error);
+      return { success: false, data: [] };
     }
   }
 
   async createNews(data) {
     try {
-      const docRef = await addDoc(collection(db, "news"), {
-        ...data,
-        createdAt: new Date().toISOString()
-      });
-      return { success: true, data: { _id: docRef.id } };
+      const dbPayload = this._mapNewsToDB(data);
+      dbPayload.created_at = new Date().toISOString();
+      
+      const { data: resData, error } = await supabase
+        .from('news')
+        .insert([dbPayload])
+        .select();
+        
+      if (error) throw error;
+      return { success: true, id: resData[0].id };
     } catch (error) {
-      console.error("Error creating news:", error);
-      throw error;
+      console.error("Create news error:", error);
+      return { success: false, message: error.message };
     }
   }
 
   async updateNews(id, data) {
     try {
-      await updateDoc(doc(db, "news", id), {
-        ...data,
-        updatedAt: new Date().toISOString()
-      });
+      const dbPayload = this._mapNewsToDB(data);
+      
+      const { error } = await supabase
+        .from('news')
+        .update(dbPayload)
+        .eq('id', id);
+        
+      if (error) throw error;
       return { success: true };
     } catch (error) {
-      console.error("Error updating news:", error);
-      throw error;
+      console.error("Update news error:", error);
+      return { success: false, message: error.message };
     }
   }
 
   async deleteNews(id) {
     try {
-      await deleteDoc(doc(db, "news", id));
+      const { error } = await supabase
+        .from('news')
+        .delete()
+        .eq('id', id);
+        
+      if (error) throw error;
       return { success: true };
     } catch (error) {
-      console.error("Error deleting news:", error);
-      throw error;
+      console.error("Delete news error:", error);
+      return { success: false, message: error.message };
     }
   }
 
   async getNewsById(id) {
     try {
-      const docRef = doc(db, "news", id);
-      const docSnap = await getDoc(docRef);
-      if (docSnap.exists()) {
-        return { success: true, data: { id: docSnap.id, ...docSnap.data() } };
-      }
-      throw new Error("News not found");
+      const { data, error } = await supabase.from('news').select('*').eq('id', id).single();
+      if (error) throw error;
+      return { success: true, data: this._mapNewsFromDB(data) };
     } catch (error) {
-      console.error("Error fetching news by id:", error);
-      throw error;
+      console.error("Get news by ID error:", error);
+      return { success: false, message: error.message };
     }
   }
 
   // ===================================
-  // EVENTS APIs
+  // PAGES (HALAMAN) APIs
+  // ===================================
+  
+  async getPageBySlug(slug) {
+    try {
+      const { data, error } = await supabase.from('pages').select('*').eq('slug', slug).single();
+      if (error) throw error;
+      return { success: true, data };
+    } catch (error) {
+      console.error("Get page error:", error);
+      return { success: false, message: error.message };
+    }
+  }
+
+  async updatePage(slug, data) {
+    try {
+      data.updated_at = new Date().toISOString();
+      const { error } = await supabase.from('pages').update(data).eq('slug', slug);
+      if (error) throw error;
+      return { success: true };
+    } catch (error) {
+      console.error("Update page error:", error);
+      return { success: false, message: error.message };
+    }
+  }
+
+  // ===================================
+  _mapEventToDB(payload) {
+    const dbPayload = {};
+    if (payload.title !== undefined) dbPayload.title = payload.title;
+    if (payload.category !== undefined) dbPayload.category = payload.category;
+    if (payload.status !== undefined) dbPayload.status = payload.status;
+    if (payload.date !== undefined) dbPayload.date = payload.date;
+    if (payload.startTime !== undefined) dbPayload.start_time = payload.startTime;
+    if (payload.endTime !== undefined) dbPayload.end_time = payload.endTime;
+    if (payload.location !== undefined) dbPayload.location = payload.location;
+    if (payload.pic !== undefined) dbPayload.pic = payload.pic;
+    if (payload.picContact !== undefined) dbPayload.pic_contact = payload.picContact;
+    if (payload.description !== undefined) dbPayload.description = payload.description;
+    if (payload.poster !== undefined) dbPayload.poster = payload.poster;
+    return dbPayload;
+  }
+
+  _mapEventFromDB(db) {
+    return {
+      _id: db.id,
+      title: db.title,
+      category: db.category,
+      status: db.status,
+      date: db.date,
+      startTime: db.start_time,
+      endTime: db.end_time,
+      location: db.location,
+      pic: db.pic,
+      picContact: db.pic_contact,
+      description: db.description,
+      poster: db.poster,
+      created_at: db.created_at
+    };
+  }
+
+  _mapProgramToDB(payload) {
+    const dbPayload = {};
+    if (payload.name !== undefined) dbPayload.title = payload.name;
+    if (payload.status !== undefined) dbPayload.status = payload.status;
+    if (payload.startDate !== undefined) dbPayload.start_date = payload.startDate;
+    if (payload.endDate !== undefined) dbPayload.end_date = payload.endDate;
+    if (payload.pic !== undefined) dbPayload.pic = payload.pic;
+    if (payload.picContact !== undefined) dbPayload.pic_contact = payload.picContact;
+    if (payload.progress !== undefined) dbPayload.progress = payload.progress;
+    if (payload.budget !== undefined) dbPayload.budget = payload.budget;
+    if (payload.description !== undefined) dbPayload.description = payload.description;
+    if (payload.image !== undefined) dbPayload.poster = payload.image;
+    return dbPayload;
+  }
+
+  _mapProgramFromDB(db) {
+    return {
+      _id: db.id,
+      name: db.title,
+      status: db.status,
+      startDate: db.start_date,
+      endDate: db.end_date,
+      pic: db.pic,
+      picContact: db.pic_contact,
+      progress: db.progress,
+      budget: db.budget,
+      description: db.description,
+      image: db.poster,
+      created_at: db.created_at
+    };
+  }
+
+  // EVENTS (AGENDA) APIs
   // ===================================
 
   async getAllEvents(params = {}) {
     try {
-      const eventsCol = collection(db, "events");
-      let q = query(eventsCol, orderBy("date", "desc"));
+      let query = supabase.from('events').select('*').order('date', { ascending: true });
+      if (params.limit) query = query.limit(params.limit);
       
-      const querySnapshot = await getDocs(q);
-      const eventsList = querySnapshot.docs.map(doc => ({ _id: doc.id, id: doc.id, ...doc.data() }));
-      return { success: true, data: eventsList };
+      const { data, error } = await query;
+      if (error) throw error;
+      
+      return { success: true, data: { events: data.map(this._mapEventFromDB) } };
     } catch (error) {
       console.error("Error fetching events:", error);
-      throw error;
+      return { success: true, data: [] };
+    }
+  }
+
+  async getEventById(id) {
+    try {
+      const { data, error } = await supabase.from('events').select('*').eq('id', id).single();
+      if (error) throw error;
+      return { success: true, data: this._mapEventFromDB(data) };
+    } catch (error) {
+      console.error("Error fetching event:", error);
+      return { success: false, message: error.message };
     }
   }
 
   async createEvent(data) {
     try {
-      const docRef = await addDoc(collection(db, "events"), {
-        ...data,
-        createdAt: new Date().toISOString()
-      });
-      return { success: true, data: { _id: docRef.id } };
+      const dbPayload = this._mapEventToDB(data);
+      dbPayload.created_at = new Date().toISOString();
+      const { data: resData, error } = await supabase
+        .from('events')
+        .insert([dbPayload])
+        .select();
+      if (error) throw error;
+      return { success: true, id: resData[0].id };
     } catch (error) {
-      console.error("Error creating event:", error);
-      throw error;
+      console.error("Create event error:", error);
+      return { success: false, message: error.message };
     }
   }
 
   async updateEvent(id, data) {
     try {
-      await updateDoc(doc(db, "events", id), {
-        ...data,
-        updatedAt: new Date().toISOString()
-      });
+      const dbPayload = this._mapEventToDB(data);
+      const { error } = await supabase.from('events').update(dbPayload).eq('id', id);
+      if (error) throw error;
       return { success: true };
     } catch (error) {
-      console.error("Error updating event:", error);
-      throw error;
+      console.error("Update event error:", error);
+      return { success: false, message: error.message };
     }
   }
 
   async deleteEvent(id) {
     try {
-      await deleteDoc(doc(db, "events", id));
+      const { error } = await supabase.from('events').delete().eq('id', id);
+      if (error) throw error;
       return { success: true };
     } catch (error) {
-      console.error("Error deleting event:", error);
-      throw error;
+      console.error("Delete event error:", error);
+      return { success: false, message: error.message };
     }
   }
 
   // ===================================
-  // PROGRAM APIs
+  // PROGRAMS APIs
   // ===================================
 
   async getAllPrograms(params = {}) {
     try {
-      const progCol = collection(db, "programs");
-      const querySnapshot = await getDocs(progCol);
-      const programsList = querySnapshot.docs.map(doc => ({ _id: doc.id, id: doc.id, ...doc.data() }));
-      return { success: true, data: programsList };
+      let query = supabase.from('programs').select('*').order('created_at', { ascending: true });
+      if (params.limit) query = query.limit(params.limit);
+      
+      const { data, error } = await query;
+      if (error) throw error;
+      
+      return { success: true, data: data.map(this._mapProgramFromDB) };
     } catch (error) {
-      console.error("Error fetching programs:", error);
-      throw error;
+      return { success: true, data: [] };
+    }
+  }
+
+  async getProgramById(id) {
+    try {
+      const { data, error } = await supabase.from('programs').select('*').eq('id', id).single();
+      if (error) throw error;
+      return { success: true, data: this._mapProgramFromDB(data) };
+    } catch (error) {
+      return { success: false, message: error.message };
     }
   }
 
   async createProgram(data) {
     try {
-      const docRef = await addDoc(collection(db, "programs"), {
-        ...data,
-        createdAt: new Date().toISOString()
-      });
-      return { success: true, data: { _id: docRef.id } };
+      const dbPayload = this._mapProgramToDB(data);
+      dbPayload.created_at = new Date().toISOString();
+      const { data: resData, error } = await supabase.from('programs').insert([dbPayload]).select();
+      if (error) throw error;
+      return { success: true, id: resData[0].id };
     } catch (error) {
-      console.error("Error creating program:", error);
-      throw error;
+      return { success: false, message: error.message };
     }
   }
 
   async updateProgram(id, data) {
     try {
-      await updateDoc(doc(db, "programs", id), {
-        ...data,
-        updatedAt: new Date().toISOString()
-      });
+      const dbPayload = this._mapProgramToDB(data);
+      const { error } = await supabase.from('programs').update(dbPayload).eq('id', id);
+      if (error) throw error;
       return { success: true };
     } catch (error) {
-      console.error("Error updating program:", error);
-      throw error;
+      return { success: false, message: error.message };
     }
   }
 
   async deleteProgram(id) {
     try {
-      await deleteDoc(doc(db, "programs", id));
+      const { error } = await supabase.from('programs').delete().eq('id', id);
+      if (error) throw error;
       return { success: true };
     } catch (error) {
-      console.error("Error deleting program:", error);
-      throw error;
+      return { success: false, message: error.message };
     }
   }
 
@@ -339,85 +482,176 @@ class API {
 
   async getAllPengurus(params = {}) {
     try {
-      const colRef = collection(db, "pengurus");
-      const querySnapshot = await getDocs(colRef);
-      const list = querySnapshot.docs.map(doc => ({ _id: doc.id, id: doc.id, ...doc.data() }));
-      return { success: true, data: list };
+      const { data, error } = await supabase
+        .from('pengurus')
+        .select('*')
+        .order('order_index', { ascending: true, nullsFirst: false })
+        .order('created_at', { ascending: true });
+      if (error) throw error;
+      return { success: true, data: data.map(d => ({ _id: d.id, id: d.id, ...d })) };
     } catch (error) {
-      console.error("Error fetching pengurus:", error);
-      throw error;
+      return { success: true, data: [] };
     }
   }
 
   async createPengurus(data) {
     try {
-      const docRef = await addDoc(collection(db, "pengurus"), {
-        ...data,
-        createdAt: new Date().toISOString()
-      });
-      return { success: true, data: { _id: docRef.id } };
+      const { data: resData, error } = await supabase
+        .from('pengurus')
+        .insert([{ ...data, created_at: new Date().toISOString() }])
+        .select();
+      if (error) throw error;
+      return { success: true, id: resData[0].id };
     } catch (error) {
-      console.error("Error creating pengurus:", error);
-      throw error;
+      throw new Error(error.message || 'Gagal menyimpan pengurus');
     }
   }
 
   async updatePengurus(id, data) {
     try {
-      await updateDoc(doc(db, "pengurus", id), {
-        ...data,
-        updatedAt: new Date().toISOString()
-      });
+      const { error } = await supabase.from('pengurus').update(data).eq('id', id);
+      if (error) throw error;
       return { success: true };
     } catch (error) {
-      console.error("Error updating pengurus:", error);
-      throw error;
+      throw new Error(error.message || 'Gagal memperbarui pengurus');
     }
   }
 
   async deletePengurus(id) {
     try {
-      await deleteDoc(doc(db, "pengurus", id));
+      const { error } = await supabase.from('pengurus').delete().eq('id', id);
+      if (error) throw error;
       return { success: true };
     } catch (error) {
-      console.error("Error deleting pengurus:", error);
-      throw error;
+      return { success: false, message: error.message };
     }
   }
 
   // ===================================
-  // MEMBER APIs
+  // PENDAFTARAN / APPLICATIONS APIs
+  // ===================================
+
+  async getAllApplications(status = null) {
+    try {
+      let query = supabase.from('applications').select('*').order('created_at', { ascending: false });
+      if (status) {
+        query = query.eq('status', status);
+      }
+      const { data, error } = await query;
+      if (error) throw error;
+      return { success: true, data: data.map(d => ({ _id: d.id, id: d.id, ...d })) };
+    } catch (error) {
+      console.error("Error fetching applications:", error);
+      return { success: true, data: [] };
+    }
+  }
+
+  async approveApplication(id) {
+    try {
+      const { error } = await supabase
+        .from('applications')
+        .update({ status: 'ACTIVE' })
+        .eq('id', id);
+      if (error) throw error;
+      return { success: true };
+    } catch (error) {
+      console.error("Error approving application:", error);
+      return { success: false, message: error.message };
+    }
+  }
+
+  async rejectApplication(id, reason) {
+    try {
+      const { error } = await supabase
+        .from('applications')
+        .update({ status: 'REJECTED', rejectReason: reason })
+        .eq('id', id);
+      if (error) throw error;
+      return { success: true };
+    } catch (error) {
+      console.error("Error rejecting application:", error);
+      return { success: false, message: error.message };
+    }
+  }
+
+  async createApplication(formData) {
+    try {
+      // Convert FormData to a plain object
+      const data = {};
+      for (const [key, value] of formData.entries()) {
+        if (key !== 'photo') {
+          data[key] = value;
+        }
+      }
+
+      // Handle photo upload
+      const photoFile = formData.get('photo');
+      if (photoFile && photoFile.size > 0) {
+        try {
+          const photoUrlRes = await this.uploadImage(photoFile, 'pendaftaran');
+          data.photoUrl = photoUrlRes.url;
+        } catch (uploadErr) {
+          console.warn("Photo upload failed:", uploadErr);
+          data.photoUrl = '';
+        }
+      }
+
+      // Add metadata
+      data.status = 'PENDING';
+      data.created_at = new Date().toISOString();
+
+      // Save to Supabase
+      const { data: resData, error } = await supabase
+        .from('applications')
+        .insert([data])
+        .select();
+        
+      if (error) throw error;
+      
+      return { success: true, message: "Pendaftaran berhasil dikirim.", id: resData[0].id };
+    } catch (error) {
+      console.error("Create application error:", error);
+      return { success: false, message: error.message || "Gagal mengirim pendaftaran." };
+    }
+  }
+
+  // ===================================
+  // MEMBERS (ANGGOTA) APIs
+  // Anggota = pendaftar yang sudah disetujui (status ACTIVE/ALUMNI)
   // ===================================
 
   async getAllMembers(params = {}) {
     try {
-      const memCol = collection(db, "members");
-      const querySnapshot = await getDocs(memCol);
-      const list = querySnapshot.docs.map(doc => ({ _id: doc.id, id: doc.id, ...doc.data() }));
-      return { success: true, data: { members: list, pagination: { total: list.length, page: 1, pages: 1 } } };
+      let query;
+      if (params.status) {
+        query = supabase.from('applications').select('*').eq('status', params.status).order('created_at', { ascending: false });
+      } else {
+        query = supabase.from('applications').select('*').in('status', ['ACTIVE', 'ALUMNI']).order('created_at', { ascending: false });
+      }
+      const { data, error } = await query;
+      if (error) throw error;
+      return { success: true, data: { members: data.map(d => ({ _id: d.id, id: d.id, ...d })) } };
     } catch (error) {
-      console.error("Error fetching members:", error);
-      throw error;
+      return { success: true, data: { members: [] } };
     }
   }
 
   async deleteMember(id) {
     try {
-      await deleteDoc(doc(db, "members", id));
+      const { error } = await supabase.from('applications').delete().eq('id', id);
+      if (error) throw error;
       return { success: true };
     } catch (error) {
-      console.error("Error deleting member:", error);
-      throw error;
+      return { success: false, message: error.message };
     }
   }
 
   async getMemberStats() {
     try {
-      const memCol = collection(db, "members");
-      const snapshot = await getDocs(memCol);
-      return { success: true, data: { totalMembers: snapshot.size } };
+      const { count, error } = await supabase.from('applications').select('*', { count: 'exact', head: true }).in('status', ['ACTIVE', 'ALUMNI']);
+      if (error) throw error;
+      return { success: true, data: { totalMembers: count || 0 } };
     } catch (error) {
-      console.error("Error fetching member stats:", error);
       return { success: true, data: { totalMembers: 0 } };
     }
   }
@@ -427,84 +661,32 @@ class API {
   // ===================================
 
   async uploadImage(file, path = 'uploads') {
-    return new Promise((resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
       try {
         const extension = file.name.split('.').pop();
         const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${extension}`;
-        const storageRef = ref(storage, `${path}/${fileName}`);
+        const filePath = `${path}/${fileName}`;
         
-        // Use resumable upload so we can cancel it if it hangs
-        const uploadTask = uploadBytesResumable(storageRef, file);
-        
-        // 5 seconds timeout to prevent infinite CORS retries locally
-        const timeoutId = setTimeout(() => {
-          uploadTask.cancel();
-          reject(new Error("Upload timeout. Check Firebase Storage CORS rules."));
-        }, 5000);
+        const { data, error } = await supabase.storage
+          .from('uploads')
+          .upload(filePath, file, {
+            cacheControl: '3600',
+            upsert: false
+          });
 
-        uploadTask.on('state_changed', 
-          (snapshot) => {
-            // progress
-          }, 
-          (error) => {
-            clearTimeout(timeoutId);
-            console.error("Error uploading image:", error);
-            reject(error);
-          }, 
-          async () => {
-            clearTimeout(timeoutId);
-            try {
-              const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
-              resolve({ success: true, url: downloadURL });
-            } catch (err) {
-              reject(err);
-            }
-          }
-        );
+        if (error) throw error;
+        
+        const { data: urlData } = supabase.storage
+          .from('uploads')
+          .getPublicUrl(filePath);
+          
+        resolve({ success: true, url: urlData.publicUrl });
       } catch (error) {
-        console.error("Error starting upload:", error);
+        console.error("Error uploading image:", error);
         reject(error);
       }
     });
   }
-
-  // === PENDAFTARAN / APPLICATIONS ===
-  async createApplication(formData) {
-    try {
-      // Convert FormData to a plain object for Firestore
-      const data = {};
-      for (const [key, value] of formData.entries()) {
-        if (key !== 'photo') {
-          data[key] = value;
-        }
-      }
-
-      // Handle photo upload if present
-      const photoFile = formData.get('photo');
-      if (photoFile && photoFile instanceof File) {
-        try {
-          const photoUrl = await this.uploadImage(photoFile, 'pendaftaran');
-          data.photoUrl = photoUrl;
-        } catch (uploadErr) {
-          console.warn("Photo upload failed, continuing without photo:", uploadErr);
-          data.photoUrl = '';
-        }
-      }
-
-      // Add metadata
-      data.status = 'pending';
-      data.createdAt = new Date().toISOString();
-
-      // Save to Firestore
-      const docRef = await addDoc(collection(db, 'applications'), data);
-      
-      return { success: true, message: "Pendaftaran berhasil dikirim.", id: docRef.id };
-    } catch (error) {
-      console.error("Create application error:", error);
-      return { success: false, message: error.message || "Gagal mengirim pendaftaran." };
-    }
-  }
-
 }
 
 // Create a global API instance and expose it
@@ -513,34 +695,21 @@ window.api = api;
 
 // Helper functions (exposed globally for backward compatibility)
 window.isAuthenticated = function() {
-  return !!localStorage.getItem('user');
+  return window.api.isAuthenticated();
 }
 
 window.getCurrentUser = function() {
-  const userStr = localStorage.getItem('user');
-  return userStr ? JSON.parse(userStr) : null;
-}
-
-window.logout = async function() {
-  try {
-    await signOut(auth);
-  } catch (error) {
-    console.error("Logout error", error);
-  }
-  localStorage.removeItem('user');
-  const path = window.location.pathname;
-  window.location.href = path.includes('/admin/') ? '../login.html' : 'login.html';
+  return window.api.getCurrentUser();
 }
 
 window.hasRole = function(requiredRoles) {
-  const user = window.getCurrentUser();
-  if (!user) return false;
-  
-  if (Array.isArray(requiredRoles)) {
-    return requiredRoles.includes(user.role);
-  }
-  
-  return user.role === requiredRoles;
+  return window.api.hasRole(requiredRoles);
+}
+
+window.logout = async function() {
+  await window.api.logout();
+  const path = window.location.pathname;
+  window.location.href = path.includes('/admin/') ? '../login.html' : 'login.html';
 }
 
 window.requireAuth = function() {
@@ -560,6 +729,7 @@ window.requireAdmin = function() {
     window.location.href = 'index.html';
     return false;
   }
-  
   return true;
 }
+
+

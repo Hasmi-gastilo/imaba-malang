@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Main JavaScript File
  * Handles common functionality across all pages
  */
@@ -103,7 +103,7 @@ function updateAuthButtons() {
     userMenu.className = 'dropdown';
     userMenu.innerHTML = `
       <a href="#" class="dropdown-toggle">
-        ${user.username} <span class="arrow">▼</span>
+        ${user.username} <span class="arrow">&#9660;</span>
       </a>
       <ul class="dropdown-menu">
         ${hasRole(['SUPER_ADMIN', 'ADMIN', 'EDITOR', 'KADERISASI_ADMIN']) ? 
@@ -264,6 +264,7 @@ async function loadPageData() {
 
   const isProgramPage = document.getElementById('programGridAll') !== null;
   const isAgendaDetail = document.getElementById('eventDetailContent') !== null;
+  const isAgendaPage = document.getElementById('agendaListAll') !== null;
 
   if (isHomePage) {
     await loadHomePageData();
@@ -277,6 +278,9 @@ async function loadPageData() {
   if (isProgramPage) {
     await loadAllProgramsPage();
   }
+  if (isAgendaPage) {
+    await loadAllAgendaPage();
+  }
   const isSearchPage = document.getElementById('searchResultsContainer') !== null;
   if (isSearchPage) {
     await loadSearchPage();
@@ -284,10 +288,67 @@ async function loadPageData() {
   if (isAgendaDetail) {
     await loadEventDetailPage();
   }
+  
+  const isDynamicPage = document.getElementById('dynamicPageContent') !== null;
+  if (isDynamicPage) {
+    await loadDynamicPage();
+  }
 }
 
 /**
- * Load homepage data
+ * Load dynamic page (profil, sejarah)
+ */
+async function loadDynamicPage() {
+  const container = document.getElementById('dynamicPageContent');
+  if (!container) return;
+  
+  const path = window.location.pathname;
+  let slug = 'profil'; 
+  if (path.includes('sejarah')) slug = 'sejarah';
+  
+  try {
+    const res = await window.api.getPageBySlug(slug);
+    if (res.success && res.data) {
+      container.innerHTML = res.data.content;
+    } else {
+      container.innerHTML = '<div style="text-align: center; color: var(--gray);">Halaman belum memiliki konten.</div>';
+    }
+  } catch (err) {
+    console.error("Error loading dynamic page", err);
+    container.innerHTML = '<div style="text-align: center; color: var(--danger);">Gagal memuat halaman.</div>';
+  }
+}
+
+/**
+ * Load all agenda page data
+ */
+async function loadAllAgendaPage() {
+  const agendaListAll = document.getElementById('agendaListAll');
+  if (!agendaListAll) return;
+
+  try {
+    const response = await api.getAllEvents();
+    
+    const events = Array.isArray(response.data) ? response.data : (response.data?.events || []);
+    
+    if (response.success && events.length > 0) {
+      agendaListAll.innerHTML = '';
+      
+      events.forEach(event => {
+        const agendaCard = createAgendaCard(event);
+        agendaListAll.appendChild(agendaCard);
+      });
+    } else {
+      showEmptyState(agendaListAll, 'Belum ada agenda kegiatan saat ini.');
+    }
+  } catch (error) {
+    console.error('Error loading agenda:', error);
+    showEmptyState(agendaListAll, 'Gagal memuat daftar agenda. Silakan refresh halaman.');
+  }
+}
+
+/**
+ * Load search page data
  */
 async function loadHomePageData() {
   try {
@@ -433,8 +494,58 @@ async function loadContactInfo() {
   const phoneEl = document.getElementById('footerPhone');
   const emailEl = document.getElementById('footerEmail');
   
-  if (phoneEl) phoneEl.textContent = '+62 xxx xxxx xxxx';
-  if (emailEl) emailEl.textContent = 'info@imabamalang.org';
+  if (phoneEl) phoneEl.textContent = '+62 877-5913-0847';
+  if (emailEl) emailEl.textContent = 'imabamalang541@gmail.com';
+}
+
+/**
+ * Create horizontal news card element
+ */
+function createHorizontalNewsCard(news, index) {
+  const card = document.createElement('a');
+  card.href = "berita-detail.html?id=${news.id}";
+  card.className = 'horizontal-news-card';
+  card.style.textDecoration = 'none';
+  card.style.color = 'inherit';
+  
+  const formattedIndex = (index + 1).toString().padStart(2, '0');
+  
+  card.innerHTML = `
+    <div class="badge-number">${formattedIndex}</div>
+    <img src="${news.thumbnail || '/images/placeholder-news.jpg'}" alt="${news.title}">
+    <div class="horizontal-news-content">
+      <span class="news-category" style="display:inline-block; margin-bottom:5px;">${news.category || 'Berita'}</span>
+      <h3>${news.title}</h3>
+      <p>${news.excerpt || ''}</p>
+      <div class="news-meta" style="margin-top: 15px;">
+        <span style="display:flex; align-items:center; gap:5px;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+          ${formatDate(news.publishedAt)}
+        </span>
+      </div>
+    </div>
+  `;
+  return card;
+}
+
+/**
+ * Create sidebar news item element
+ */
+function createSidebarNewsItem(news) {
+  const card = document.createElement('a');
+  card.href = "berita-detail.html?id=${news.id}";
+  card.className = 'widget-news-item';
+  card.innerHTML = `
+    <img src="${news.thumbnail || '/images/placeholder-news.jpg'}" alt="${news.title}">
+    <div style="flex-grow: 1;">
+      <h4>${news.title}</h4>
+      <div class="date" style="display:flex; align-items:center; gap:5px; opacity:0.7;">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+        ${formatDate(news.publishedAt)}
+      </div>
+    </div>
+  `;
+  return card;
 }
 
 /**
@@ -457,7 +568,7 @@ function createNewsCard(news) {
   `;
   
   card.addEventListener('click', () => {
-    window.location.href = `berita-detail.html?slug=${news.slug}`;
+    window.location.href = `berita-detail.html?id=${news._id || news.id}`;
   });
   
   return card;
@@ -481,8 +592,8 @@ function createAgendaCard(event) {
     <div class="agenda-content">
       <h3>${event.title}</h3>
       <div class="agenda-meta">
-        <span>📍 ${event.location}</span>
-        <span>⏰ ${event.startTime}</span>
+        <span>ÃƒÂ°Ã…Â¸Ã¢â‚¬Å“Ã‚Â ${event.location}</span>
+        <span>ÃƒÂ¢Ã‚ÂÃ‚Â° ${event.startTime}</span>
         <span class="agenda-status ${event.status.toLowerCase().replace(' ', '-')}">${event.status}</span>
       </div>
     </div>
@@ -658,8 +769,8 @@ async function loadEventDetailPage() {
       if (imageEl) imageEl.src = event.image || '/images/placeholder-news.jpg';
       if (metaEl) {
         metaEl.innerHTML = `
-          <span>📍 ${event.location || '-'}</span> &bull; 
-          <span>⏰ ${event.startTime || '-'} - ${event.endTime || '-'}</span> &bull; 
+          <span>ÃƒÂ°Ã…Â¸Ã¢â‚¬Å“Ã‚Â ${event.location || '-'}</span> &bull; 
+          <span>ÃƒÂ¢Ã‚ÂÃ‚Â° ${event.startTime || '-'} - ${event.endTime || '-'}</span> &bull; 
           <span>${event.status}</span>
         `;
       }
@@ -681,6 +792,7 @@ async function loadEventDetailPage() {
  */
 async function loadAllNewsPage() {
   const newsGridAll = document.getElementById('newsGridAll');
+  const sidebarNewsList = document.getElementById('sidebarNewsList');
   if (!newsGridAll) return;
 
   try {
@@ -690,13 +802,24 @@ async function loadAllNewsPage() {
     
     if (response.success && newsItems.length > 0) {
       newsGridAll.innerHTML = '';
+      if (sidebarNewsList) sidebarNewsList.innerHTML = '';
       
-      newsItems.forEach(news => {
-        const newsCard = createNewsCard(news);
+      // Main news list
+      newsItems.forEach((news, index) => {
+        const newsCard = createHorizontalNewsCard(news, index);
         newsGridAll.appendChild(newsCard);
       });
+      
+      // Sidebar news list (e.g. top 5 recent)
+      if (sidebarNewsList) {
+        newsItems.slice(0, 5).forEach(news => {
+          const sidebarCard = createSidebarNewsItem(news);
+          sidebarNewsList.appendChild(sidebarCard);
+        });
+      }
     } else {
       showEmptyState(newsGridAll, 'Belum ada berita yang tersedia');
+      if (sidebarNewsList) sidebarNewsList.innerHTML = '<p style="opacity:0.7; font-size:0.9rem;">Belum ada berita terkini.</p>';
     }
   } catch (error) {
     console.error('Error loading all news:', error);
@@ -709,9 +832,9 @@ async function loadAllNewsPage() {
  */
 async function loadNewsDetailPage() {
   const params = new URLSearchParams(window.location.search);
-  const slug = params.get('slug');
+  const id = params.get('id');
   
-  if (!slug) {
+  if (!id) {
     window.location.href = 'berita.html';
     return;
   }
@@ -724,7 +847,7 @@ async function loadNewsDetailPage() {
   if (!contentEl) return;
   
   try {
-    const response = await api.getNewsBySlug(slug);
+    const response = await api.getNewsById(id);
     
     if (response.success && response.data) {
       const news = response.data;
@@ -989,3 +1112,8 @@ async function loadSearchPage() {
     if (searchStatus) searchStatus.textContent = 'Terjadi kesalahan saat mencari data.';
   }
 }
+
+
+
+
+
