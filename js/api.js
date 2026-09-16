@@ -601,14 +601,13 @@ class API {
       data.created_at = new Date().toISOString();
 
       // Save to Supabase
-      const { data: resData, error } = await supabase
+      const { error } = await supabase
         .from('applications')
-        .insert([data])
-        .select();
+        .insert([data]);
         
       if (error) throw error;
       
-      return { success: true, message: "Pendaftaran berhasil dikirim.", id: resData[0].id };
+      return { success: true, message: "Pendaftaran berhasil dikirim." };
     } catch (error) {
       console.error("Create application error:", error);
       return { success: false, message: error.message || "Gagal mengirim pendaftaran." };
