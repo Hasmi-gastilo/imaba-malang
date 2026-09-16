@@ -897,6 +897,34 @@ async function loadNewsDetailPage() {
       // Render HTML content safely
       contentEl.innerHTML = news.content.replace(/\n/g, '<br>');
       document.title = `${news.title} - DPW IMABA Malang`;
+      
+      // Load other news for sidebar
+      const sidebarOtherNewsList = document.getElementById('sidebarOtherNewsList');
+      if (sidebarOtherNewsList) {
+        try {
+          const allNewsResponse = await api.getAllNews();
+          const allNewsItems = Array.isArray(allNewsResponse.data) ? allNewsResponse.data : (allNewsResponse.data?.news || []);
+          if (allNewsResponse.success && allNewsItems.length > 0) {
+            sidebarOtherNewsList.innerHTML = '';
+            // Filter out current news and get top 5
+            const otherNews = allNewsItems.filter(n => (n.id || n._id) !== id).slice(0, 5);
+            if (otherNews.length > 0) {
+              otherNews.forEach(other => {
+                const sidebarCard = createSidebarNewsItem(other);
+                sidebarOtherNewsList.appendChild(sidebarCard);
+              });
+            } else {
+              sidebarOtherNewsList.innerHTML = '<p style="opacity:0.7; font-size:0.9rem; padding: 10px;">Belum ada berita lain.</p>';
+            }
+          } else {
+            sidebarOtherNewsList.innerHTML = '<p style="opacity:0.7; font-size:0.9rem; padding: 10px;">Belum ada berita lain.</p>';
+          }
+        } catch (e) {
+          console.error('Error loading other news:', e);
+          sidebarOtherNewsList.innerHTML = '<p style="opacity:0.7; font-size:0.9rem; padding: 10px;">Gagal memuat berita.</p>';
+        }
+      }
+      
     } else {
       contentEl.innerHTML = '<p>Berita tidak ditemukan.</p>';
     }
