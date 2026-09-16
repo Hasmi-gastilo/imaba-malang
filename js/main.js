@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Main JavaScript File
  * Handles common functionality across all pages
  */
@@ -503,7 +503,7 @@ async function loadContactInfo() {
  */
 function createHorizontalNewsCard(news, index) {
   const card = document.createElement('a');
-  card.href = "berita-detail.html?id=${news.id}";
+  card.href = `berita-detail.html?id=${news.id || news._id}`;
   card.className = 'horizontal-news-card';
   card.style.textDecoration = 'none';
   card.style.color = 'inherit';
@@ -533,7 +533,7 @@ function createHorizontalNewsCard(news, index) {
  */
 function createSidebarNewsItem(news) {
   const card = document.createElement('a');
-  card.href = "berita-detail.html?id=${news.id}";
+  card.href = `berita-detail.html?id=${news.id || news._id}`;
   card.className = 'widget-news-item';
   card.innerHTML = `
     <img src="${news.thumbnail || '/images/placeholder-news.jpg'}" alt="${news.title}">
@@ -841,7 +841,8 @@ async function loadNewsDetailPage() {
   
   const contentEl = document.getElementById('newsDetailContent');
   const titleEl = document.getElementById('newsDetailTitle');
-  const metaEl = document.getElementById('newsDetailMeta');
+  const metaDateEl = document.getElementById('metaDate');
+  const categoryEl = document.getElementById('newsDetailCategory');
   const imageEl = document.getElementById('newsDetailImage');
   
   if (!contentEl) return;
@@ -854,12 +855,43 @@ async function loadNewsDetailPage() {
       
       if (titleEl) titleEl.textContent = news.title;
       if (imageEl) imageEl.src = news.thumbnail || news.image || '/images/placeholder-news.jpg';
-      if (metaEl) {
-        metaEl.innerHTML = `
-          <span>${news.category}</span> &bull; 
-          <span>${formatDate(news.publishedAt || news.createdAt)}</span> &bull; 
-          <span>${news.viewCount || 0} views</span>
-        `;
+      if (metaDateEl) metaDateEl.textContent = formatDate(news.publishedAt || news.createdAt);
+      if (categoryEl) categoryEl.textContent = news.category;
+      
+      // Generate Slug for URL
+      const slug = news.title.toString().toLowerCase()
+        .replace(/\s+/g, '-')           // Replace spaces with -
+        .replace(/[^\w\-]+/g, '')       // Remove all non-word chars
+        .replace(/\-\-+/g, '-')         // Replace multiple - with single -
+        .replace(/^-+/, '')             // Trim - from start of text
+        .replace(/-+$/, '');            // Trim - from end of text
+        
+      // Update address bar silently for prettier URL
+      const newUrl = `${window.location.pathname}?judul=${slug}&id=${id}`;
+      window.history.replaceState({}, '', newUrl);
+      
+      // Share Logic
+      const shareUrl = `${window.location.origin}${newUrl}`;
+      const shareText = `${news.title}\n\nBaca selengkapnya:\n${shareUrl}`;
+      const btnShareWA = document.getElementById('btnShareWA');
+      if (btnShareWA) {
+        btnShareWA.onclick = () => {
+          window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(shareText)}`, '_blank');
+        };
+      }
+      
+      const btnShareCopy = document.getElementById('btnShareCopy');
+      if (btnShareCopy) {
+        btnShareCopy.onclick = () => {
+          navigator.clipboard.writeText(shareText).then(() => {
+            const originalHTML = btnShareCopy.innerHTML;
+            btnShareCopy.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg> Tersalin!`;
+            setTimeout(() => btnShareCopy.innerHTML = originalHTML, 2000);
+          }).catch(err => {
+            console.error('Gagal menyalin:', err);
+            alert('Gagal menyalin link.');
+          });
+        };
       }
       
       // Render HTML content safely
